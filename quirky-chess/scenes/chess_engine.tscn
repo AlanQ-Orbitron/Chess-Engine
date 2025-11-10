@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=4 uid="uid://dfuutgfglne6l"]
+
+[ext_resource type="PackedScene" uid="uid://bmr3y21j8mc8b" path="res://scenes/board.tscn" id="1_iea4b"]
+[ext_resource type="Texture2D" uid="uid://dnsvklgt61lcy" path="res://assets/Markers.svg" id="2_o4g7e"]
+[ext_resource type="PackedScene" uid="uid://b2grq172gg2b0" path="res://scenes/chess_pieces.tscn" id="2_xegwo"]
+
+[node name="Chess-Engine" type="Node2D"]
+
+[node name="Board" parent="." instance=ExtResource("1_iea4b")]
+tile_map_data = PackedByteArray("AAAAAAAAAQAAAAAAAAA=")
+
+[node name="Markers" type="TextureRect" parent="Board"]
+offset_right = 576.0
+offset_bottom = 576.0
+texture = ExtResource("2_o4g7e")
+
+[node name="Highlights" parent="." instance=ExtResource("2_xegwo")]
+tile_map_data = PackedByteArray("AAAAAAAAAgAAAAEAAAABAAAAAgAAAAIAAAACAAAAAgAAAAMAAAADAAAAAgAAAAQAAAAEAAAAAgAAAAUAAAAFAAAAAgAAAAMAAAAHAAAAAgAAAAEAAAAGAAAAAgAAAAIAAAAHAAcAAgABAAEAAAAGAAcAAgABAAIAAAAFAAcAAgABAAMAAAAEAAcAAgABAAUAAAAAAAcAAgABAAEAAAABAAcAAgABAAIAAAACAAcAAgABAAMAAAADAAcAAgABAAQAAAAHAAYAAgABAAAAAAAAAAYAAgABAAAAAAABAAYAAgABAAAAAAACAAYAAgABAAAAAAADAAYAAgABAAAAAAAFAAYAAgABAAAAAAAGAAYAAgABAAAAAAA=")
+
+[node name="ChessPieces" parent="." instance=ExtResource("2_xegwo")]
+tile_map_data = PackedByteArray("AAAAAAAAAgAAAAEAAAABAAAAAgAAAAIAAAACAAAAAgAAAAMAAAADAAAAAgAAAAQAAAAEAAAAAgAAAAUAAAAFAAAAAgAAAAMAAAAHAAAAAgAAAAEAAAAGAAAAAgAAAAIAAAAHAAcAAgABAAEAAAAGAAcAAgABAAIAAAAFAAcAAgABAAMAAAAEAAcAAgABAAUAAAAAAAcAAgABAAEAAAABAAcAAgABAAIAAAACAAcAAgABAAMAAAADAAcAAgABAAQAAAAHAAYAAgABAAAAAAAAAAYAAgABAAAAAAABAAYAAgABAAAAAAACAAYAAgABAAAAAAADAAYAAgABAAAAAAAFAAYAAgABAAAAAAAGAAYAAgABAAAAAAAHAAEAAgAAAAAAAAAGAAEAAgAAAAAAAAAFAAEAAgAAAAAAAAAEAAEAAgAAAAAAAAADAAEAAgAAAAAAAAACAAEAAgAAAAAAAAABAAEAAgAAAAAAAAAAAAEAAgAAAAAAAAAEAAYAAgABAAAAAAA=")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(288, 288)
