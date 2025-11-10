@@ -10,7 +10,7 @@ from typing import Optional
 TOOL_HEADER = "Tool For Generating XML Editor Documentation By @realNikich"
 SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT_DIR = SCRIPT_DIR.parent
-PROJECT_DIR = ROOT_DIR / "test_project"
+PROJECT_DIR = ROOT_DIR / "quirky-chess"
 DONT_TOUCH_FILE = ROOT_DIR / "dont_touch.txt"
 GODOT_PATTERN = r"Godot|godot"
 VALID_EXECUTABLE_EXTENSIONS = {
@@ -31,7 +31,7 @@ def print_header() -> None:
 def display_warning() -> None:
     """Display warnings about requirements for generating documentation."""
     print(f"\n{'!' * 80}")
-    print("WARNING: The Godot Engine test_project MUST be open in the Godot Editor!")
+    print("WARNING: The Godot Engine quirky-chess MUST be open in the Godot Editor!")
     print(f"Please open '{PROJECT_DIR / 'project.godot'}' in Godot and keep the editor running.")
     print("Documentation will NOT be generated if the project is not open.")
     print("\nWARNING: Before trying to generate XML documentation, ensure you have a 'bin' folder")
