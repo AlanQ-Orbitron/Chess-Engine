@@ -25,7 +25,7 @@ def find_sources(dirs, exts):
 
 # Configuration
 libname = "zatters_chessengine"
-projectdir = "test_project"
+projectdir = "quirky-chess"
 
 # Set up the environment
 env = Environment(tools=["default"], PLATFORM="")
