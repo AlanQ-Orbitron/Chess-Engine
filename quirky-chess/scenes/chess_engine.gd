@@ -24,6 +24,7 @@ enum color {
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("MB1"):
 		selectedPiece = chess_pieces.getPiece(get_global_mouse_position())
+		highlights.setHighlights(chess_pieces.local_to_map(to_local(get_global_mouse_position())), chess_pieces.board.get_valid_moves())
 		if selectedPiece == null:
 			pieces.hide()
 			isSelectedNull = true
@@ -45,5 +46,17 @@ func _input(event: InputEvent) -> void:
 				chess_pieces.set_cell(selectedPiece.get("position"), 2, selectedPiece.get("atlas"))
 
 func _ready() -> void:
-	pass
-	#chess_pieces.moveTo([Vector2(color.Black, pieaces.King), Vector2(0, 3)], Vector2(0, 0))
+	chess_pieces.board.generate_board("r1b2b2/8/8/8/8/8/8/2B2B2 w KQkq - 0 1")
+	
+	for i in range(8):
+		var list: Array = []
+		for j in range(8):
+			list.append(i - j)
+		print(list)
+
+func toString(n: int) -> String:
+	var bits: String = ""
+	for i in range(64):
+		bits = str(n & 1) + bits
+		n >>= 1
+	return bits

@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=4 uid="uid://dfuutgfglne6l"]
+[gd_scene load_steps=8 format=3 uid="uid://dfuutgfglne6l"]
 
 [ext_resource type="PackedScene" uid="uid://bmr3y21j8mc8b" path="res://scenes/board.tscn" id="1_iea4b"]
 [ext_resource type="Script" uid="uid://dg61twibheqln" path="res://scenes/chess_engine.gd" id="1_mc8d8"]
@@ -12,22 +12,23 @@
 script = ExtResource("1_mc8d8")
 
 [node name="Board" parent="." instance=ExtResource("1_iea4b")]
-tile_map_data = PackedByteArray("AAAAAAAAAQAAAAAAAAA=")
+tile_map_data = PackedByteArray(0, 0, 0, 0, 255, 255, 1, 0, 0, 0, 0, 0, 0, 0)
 
 [node name="Markers" type="TextureRect" parent="Board"]
+offset_top = -576.0
 offset_right = 576.0
-offset_bottom = 576.0
 texture = ExtResource("2_o4g7e")
 
 [node name="Highlights" parent="." instance=ExtResource("2_xegwo")]
 tile_map_data = PackedByteArray()
+script = ExtResource("5_2j0vo")
 
 [node name="ChessPieces" parent="." instance=ExtResource("2_xegwo")]
-tile_map_data = PackedByteArray("AAAAAAAAAgAAAAEAAAABAAAAAgAAAAIAAAACAAAAAgAAAAMAAAADAAAAAgAAAAQAAAAEAAAAAgAAAAUAAAAFAAAAAgAAAAMAAAAHAAAAAgAAAAEAAAAGAAAAAgAAAAIAAAAHAAcAAgABAAEAAAAAAAcAAgABAAEAAAAEAAcAAgABAAUAAAADAAcAAgABAAQAAAAFAAcAAgABAAMAAAACAAcAAgABAAMAAAAGAAcAAgABAAIAAAABAAcAAgABAAIAAAAHAAYAAgABAAAAAAAGAAYAAgABAAAAAAAFAAYAAgABAAAAAAAEAAYAAgABAAAAAAADAAYAAgABAAAAAAACAAYAAgABAAAAAAABAAYAAgABAAAAAAAAAAYAAgABAAAAAAAHAAEAAgAAAAAAAAAGAAEAAgAAAAAAAAAFAAEAAgAAAAAAAAAEAAEAAgAAAAAAAAADAAEAAgAAAAAAAAACAAEAAgAAAAAAAAABAAEAAgAAAAAAAAAAAAEAAgAAAAAAAAA=")
+tile_map_data = PackedByteArray(0, 0, 2, 0, 248, 255, 2, 0, 0, 0, 3, 0, 0, 0, 2, 0, 255, 255, 2, 0, 1, 0, 3, 0, 0, 0, 5, 0, 248, 255, 2, 0, 0, 0, 3, 0, 0, 0, 5, 0, 255, 255, 2, 0, 1, 0, 3, 0, 0, 0)
 script = ExtResource("5_2j0vo")
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(288, 288)
+position = Vector2(288, -288)
 
 [node name="Pieces" parent="." instance=ExtResource("6_rommo")]
 visible = false

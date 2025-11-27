@@ -1,5 +1,4 @@
 // Include your classes, that you want to expose to Godot
-#include "chess_board.cpp"
 #include "chess_board.hpp"
 
 #include <gdextension_interface.h>
@@ -16,14 +15,13 @@ void initialize_gdextension_types(ModuleInitializationLevel p_level)
 	}
 
 	// Register your classes here, so they are available in the Godot editor and engine
+	GDREGISTER_CLASS(ChessBoard);
 }
 
 void uninitialize_gdextension_types(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
-
-	GDREGISTER_CLASS(ChessBoard);
 }
 
 extern "C"
