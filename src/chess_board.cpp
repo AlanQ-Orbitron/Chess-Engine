@@ -180,7 +180,7 @@ uint64_t ChessBoard::generate_wpawn_movement(int square_index)
     pair rankfile_index = index_to_rankfile(square_index);
     uint64_t pawn_attack = (1ULL << ((!(rankfile_index.first == 7 || rankfile_index.second == 7)) ? square_index + 9 : square_index)) | (1ULL << ((!(rankfile_index.first == 7 || rankfile_index.second == 7)) ? square_index + 9 : square_index)) & (Board.white_pieces | Board.black_pieces);
     uint64_t pawn_movement = (1ULL << max(square_index, square_index + 8) | ((rankfile_index.second == 1) ?  1ULL << (square_index + 16) : 0ULL)) & (~(Board.white_pieces | Board.black_pieces));
-    return pawn_movement | pawn_attack;
+    return pawn_movement | pawn_attack; 
 }
 uint64_t ChessBoard::generate_bpawn_movement(int square_index)
 {
