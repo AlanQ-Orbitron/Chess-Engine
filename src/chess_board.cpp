@@ -1,13 +1,29 @@
 #include "chess_board.hpp"
+#include <algorithm>
+#include <climits>
 #include <cstdint>
 #include <string>
 #include <godot_cpp/variant/utility_functions.hpp>
+#include "godot_cpp/core/defs.hpp"
 #include "godot_cpp/variant/array.hpp"
 #include "godot_cpp/variant/string.hpp"
+#include <stdlib.h>
 #include <godot_cpp/core/class_db.hpp>
 
 using namespace godot;
 using namespace std;
+
+
+inline uint64_t reverse_bit(uint64_t x)
+{
+    x = ((x >> 1)  & 0x5555555555555555ULL) | ((x & 0x5555555555555555ULL) << 1);
+    x = ((x >> 2)  & 0x3333333333333333ULL) | ((x & 0x3333333333333333ULL) << 2);
+    x = ((x >> 4)  & 0x0F0F0F0F0F0F0F0FULL) | ((x & 0x0F0F0F0F0F0F0F0FULL) << 4);
+    x = ((x >> 8)  & 0x00FF00FF00FF00FFULL) | ((x & 0x00FF00FF00FF00FFULL) << 8);
+    x = ((x >> 16) & 0x0000FFFF0000FFFFULL) | ((x & 0x0000FFFF0000FFFFULL) << 16);
+    x = (x >> 32) | (x << 32);
+    return x;
+}
 
 void ChessBoard::reset_board()
 {
@@ -73,10 +89,12 @@ ChessBoard::GameState ChessBoard::fen_to_bit(String board)
     // Only works with standard FEN chess notation
     ChessBoard::GameState converted_state;
     Array states = board.split(" ");
-    String position = String(states[0]).replace("/", "").to_lower();
+    String position = String(states[0]).replace("/", "");
 
     converted_state.white_pieces = convert_to_binary(process_position(position, U'B', U'R'));
     converted_state.black_pieces = convert_to_binary(process_position(position, U'b', U'r'));
+    position = position.to_lower();
+
     converted_state.pawns = convert_to_binary(process_position(position, U'p', U'p'));
     converted_state.rooks = convert_to_binary(process_position(position, U'r', U'r'));
     converted_state.knights = convert_to_binary(process_position(position, U'n', U'n'));
@@ -91,6 +109,17 @@ ChessBoard::GameState ChessBoard::fen_to_bit(String board)
 // {
     
 // }
+
+uint64_t ChessBoard::mirrorHorizontal (uint64_t x)
+{
+   const uint64_t k1 = 0x5555555555555555;
+   const uint64_t k2 = 0x3333333333333333;
+   const uint64_t k4 = 0x0f0f0f0f0f0f0f0f;
+   x = ((x >> 1) & k1) +  2*(x & k1);
+   x = ((x >> 2) & k2) +  4*(x & k2);
+   x = ((x >> 4) & k4) + 16*(x & k4);
+   return x;
+}
 
 void ChessBoard::generate_board(String board)
 {
@@ -108,26 +137,43 @@ void ChessBoard::generate_board(String board)
 
 void ChessBoard::generate_moves()
 {
-    auto generate_attack_mask = [this](uint64_t bitboard, int piece_type, auto generate) {
+    auto generate_attack_mask = [this](uint64_t bitboard, uint64_t color, int piece_type, auto generate) {
         int square_index;
-        while (bitboard) {
-            square_index = pop_least_significant(&bitboard);
-            Board.attack_boards[square_index][piece_type] = generate(square_index);
+        uint64_t full = bitboard & color;
+        while (full) {
+            square_index = pop_least_significant(&full);
+            Board.attack_boards[square_index][piece_type] = generate(square_index) & (~color);
         }
     };
     
-    generate_attack_mask(Board.rooks & Board.white_pieces, WRook, [this](int square_index) {return generate_rook_movement(square_index);});
-    generate_attack_mask(Board.knights & Board.white_pieces, WKnight, [this](int square_index) {return generate_knight_movement(square_index);});
-    generate_attack_mask(Board.bishops & Board.white_pieces, WBishop, [this](int square_index) {return generate_bishop_movement(square_index);});
-    generate_attack_mask(Board.queens & Board.white_pieces, WQueen, [this](int square_index) {return generate_queen_movement(square_index);});
-    generate_attack_mask(Board.kings & Board.white_pieces, WKing, [this](int square_index) {return generate_king_movement(square_index);});
-    generate_attack_mask(Board.rooks & Board.black_pieces, BRook, [this](int square_index) {return generate_rook_movement(square_index);});
-    generate_attack_mask(Board.knights & Board.black_pieces, BKnight, [this](int square_index) {return generate_knight_movement(square_index);});
-    generate_attack_mask(Board.bishops & Board.black_pieces, BBishop, [this](int square_index) {return generate_bishop_movement(square_index);});
-    generate_attack_mask(Board.queens & Board.black_pieces, BQueen, [this](int square_index) {return generate_queen_movement(square_index);});
-    generate_attack_mask(Board.kings & Board.black_pieces, BKing, [this](int square_index) {return generate_king_movement(square_index);});
+    generate_attack_mask(Board.rooks, Board.white_pieces, WRook, [this](int square_index) {return generate_rook_movement(square_index);});
+    generate_attack_mask(Board.knights, Board.white_pieces, WKnight, [this](int square_index) {return generate_knight_movement(square_index);});
+    generate_attack_mask(Board.bishops, Board.white_pieces, WBishop, [this](int square_index) {return generate_bishop_movement(square_index);});
+    generate_attack_mask(Board.queens, Board.white_pieces, WQueen, [this](int square_index) {return generate_queen_movement(square_index);});
+    generate_attack_mask(Board.kings, Board.white_pieces, WKing, [this](int square_index) {return generate_king_movement(square_index);});
+    generate_attack_mask(Board.rooks, Board.black_pieces, BRook, [this](int square_index) {return generate_rook_movement(square_index);});
+    generate_attack_mask(Board.knights, Board.black_pieces, BKnight, [this](int square_index) {return generate_knight_movement(square_index);});
+    generate_attack_mask(Board.bishops, Board.black_pieces, BBishop, [this](int square_index) {return generate_bishop_movement(square_index);});
+    generate_attack_mask(Board.queens, Board.black_pieces, BQueen, [this](int square_index) {return generate_queen_movement(square_index);});
+    generate_attack_mask(Board.kings, Board.black_pieces, BKing, [this](int square_index) {return generate_king_movement(square_index);});
        
 }
+
+
+
+
+uint64_t ChessBoard::generate_h_quintessence(int square_index, uint64_t mask) // Stollen from https://www.chessprogramming.org/Hyperbola_Quintessence
+{
+   uint64_t forward, reverse;
+   forward = ((Board.white_pieces | Board.black_pieces) & mask) - (1ULL << square_index);
+   reverse = reverse_bit(forward);
+   forward -= 1ULL << square_index;
+   reverse -= reverse_bit(1ULL << square_index);
+   forward ^= reverse_bit(reverse);
+   forward &= mask;
+   return forward;
+}
+
 
 // uint64_t ChessBoard::generate_pawn_movement(int index)
 // {
@@ -137,8 +183,7 @@ void ChessBoard::generate_moves()
 uint64_t ChessBoard::generate_rook_movement(int square_index)
 {
     pair rankfile_index = index_to_rankfile(square_index);
-
-    return (VERTICAL << rankfile_index.first) | (HORIZONTAL << 8 * rankfile_index.second);
+    return generate_h_quintessence(square_index, VERTICAL << rankfile_index.first) | generate_h_quintessence(square_index, HORIZONTAL << 8 * rankfile_index.second);
 }
 
 uint64_t ChessBoard::generate_knight_movement(int index)
@@ -150,11 +195,14 @@ uint64_t ChessBoard::generate_knight_movement(int index)
 uint64_t ChessBoard::generate_bishop_movement(int square_index)
 {
     pair rankfile_index = index_to_rankfile(square_index);
-    int difference_L = (7 - rankfile_index.first) - rankfile_index.second;
-    int difference_R = rankfile_index.first - rankfile_index.second;
-    uint64_t D1 = (difference_L < 0) ? DIAGANOL_L << 8 * difference_L : DIAGANOL_L >> 8 * difference_L;
-    uint64_t D2 = (difference_L < 0) ? DIAGANOL_R << 8 * difference_L : DIAGANOL_R >> 8 * difference_L;
-    return D1 | D2;
+    int difference_L = rankfile_index.first - rankfile_index.second;
+    int difference_R = (7 - rankfile_index.first) - rankfile_index.second;
+    uint64_t D1 = (difference_L > 0) ? DIAGONAL_L >> 8 * difference_L: DIAGONAL_L << 8 * abs(difference_L);
+    uint64_t D2 = (difference_R > 0) ? DIAGONAL_R >> 8 * difference_R: DIAGONAL_R << 8 * abs(difference_R);
+    return (D1 | D2) & (
+        generate_h_quintessence(square_index, D1) |
+        generate_h_quintessence(square_index, D2)
+    );
 }
 
 uint64_t ChessBoard::generate_queen_movement(int index)
@@ -165,8 +213,9 @@ uint64_t ChessBoard::generate_queen_movement(int index)
 uint64_t ChessBoard::generate_king_movement(int square_index)
 {
     pair rankfile_index = index_to_rankfile(square_index);
-    uint64_t square_3x3 = 0x0000000000070707;
-    return square_3x3 << (8 * (square_index - 1) + square_index);
+    uint64_t mask_vertical = ((VERTICAL << rankfile_index.first) | (VERTICAL << max(0, rankfile_index.first - 1)) | (VERTICAL << min(7, rankfile_index.first + 1)));
+    uint64_t mask = (ULLONG_MAX << 8 * max(0 ,rankfile_index.second - 1)) & (ULLONG_MAX >> 8 * max(0, 6 - rankfile_index.second)) & mask_vertical;
+    return mask;
 }
 
 

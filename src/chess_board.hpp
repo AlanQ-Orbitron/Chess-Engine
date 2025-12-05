@@ -50,8 +50,8 @@ class ChessBoard: public godot::Node{
         GameState Board;
         const uint64_t HORIZONTAL = 0x00000000000000FF;
         const uint64_t VERTICAL = 0x0101010101010101;
-        const uint64_t DIAGANOL_L = 0x8040201008040201;
-        const uint64_t DIAGANOL_R = 0x0102040810204080;
+        const uint64_t DIAGONAL_L = 0x8040201008040201;
+        const uint64_t DIAGONAL_R = 0x0102040810204080;
     public:
         void reset_board();
         void generate_board(godot::String board);
@@ -62,6 +62,7 @@ class ChessBoard: public godot::Node{
         GameState fen_to_bit(godot::String board);
         godot::String bit_to_fen(GameState board);
         pair<int, int> index_to_rankfile(int square_index) {return {square_index % 8, square_index / 8};}; // Rank, File
+        uint64_t mirrorHorizontal (uint64_t x);
         uint64_t pop_least_significant(uint64_t* bitboard) {
             unsigned long popped_index;
             _BitScanForward64(&popped_index, *bitboard);
@@ -91,7 +92,8 @@ class ChessBoard: public godot::Node{
             board["kings"] = Board.kings;
             return board;
         };
-        static uint64_t generate_pawn_movement(int square_index);
+        uint64_t generate_h_quintessence(int square_index, uint64_t mask);
+        uint64_t generate_pawn_movement(int square_index);
         uint64_t generate_rook_movement(int square_index);
         uint64_t generate_knight_movement(int square_index);
         uint64_t generate_bishop_movement(int square_index);
