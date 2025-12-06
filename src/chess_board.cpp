@@ -178,14 +178,16 @@ uint64_t ChessBoard::generate_h_quintessence(int square_index, uint64_t mask) //
 uint64_t ChessBoard::generate_wpawn_movement(int square_index)
 {
     pair rankfile_index = index_to_rankfile(square_index);
-    uint64_t pawn_attack = (1ULL << ((!(rankfile_index.first == 7 || rankfile_index.second == 7)) ? square_index + 9 : square_index)) | (1ULL << ((!(rankfile_index.first == 7 || rankfile_index.second == 7)) ? square_index + 9 : square_index)) & (Board.white_pieces | Board.black_pieces);
+    uint64_t pawn_attack = ((1ULL << ( square_index + 9)) | (1ULL << (square_index + 7))) & (Board.white_pieces | Board.black_pieces);
     uint64_t pawn_movement = (1ULL << max(square_index, square_index + 8) | ((rankfile_index.second == 1) ?  1ULL << (square_index + 16) : 0ULL)) & (~(Board.white_pieces | Board.black_pieces));
-    return pawn_movement | pawn_attack; 
+    return (pawn_attack | pawn_movement) & ((rankfile_index.second == 7) ? 0ULL : ULLONG_MAX << (rankfile_index.second + 1) * 8); 
 }
 uint64_t ChessBoard::generate_bpawn_movement(int square_index)
 {
     pair rankfile_index = index_to_rankfile(square_index);
-    return 1ULL << min(square_index, square_index - 8) | ((rankfile_index.second == 1) ?  1ULL << (square_index + 16) : 0ULL) | ((1ULL << ((rankfile_index.first == 7 && !(rankfile_index.second == 0)) ? square_index - 9 : square_index) | 1ULL << ((rankfile_index.first == 0 && !(rankfile_index.second == 0)) ? square_index - 7 : square_index)) & (Board.white_pieces | Board.black_pieces));
+    uint64_t pawn_attack = ((1ULL << ( square_index - 9)) | (1ULL << (square_index - 7))) & (Board.white_pieces | Board.black_pieces);
+    uint64_t pawn_movement = (1ULL << min(square_index, square_index - 8) | ((rankfile_index.second == 6) ?  1ULL << (square_index - 16) : 0ULL)) & (~(Board.white_pieces | Board.black_pieces));
+    return (pawn_attack | pawn_movement) & ((rankfile_index.second == 0) ? 0ULL : ULLONG_MAX >> (8 - rankfile_index.second) * 8); 
 }
 
 uint64_t ChessBoard::generate_rook_movement(int square_index)
