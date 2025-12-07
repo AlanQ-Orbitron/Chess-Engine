@@ -93,11 +93,16 @@ class ChessBoard: public godot::Node{
             return board;
         };
         uint64_t generate_h_quintessence(int square_index, uint64_t mask);
+        uint64_t generate_pawn_movement(int square_index, bool is_white);
         uint64_t generate_wpawn_movement(int square_index);
         uint64_t generate_bpawn_movement(int square_index);
-        uint64_t generate_rook_movement(int square_index);
-        uint64_t generate_knight_movement(int square_index);
-        uint64_t generate_bishop_movement(int square_index);
-        uint64_t generate_queen_movement(int square_index);
-        uint64_t generate_king_movement(int square_index);
+        uint64_t generate_rook_movement(int square_index, bool = true);
+        uint64_t generate_knight_movement(int square_index, bool = true);
+        uint64_t generate_bishop_movement(int square_index, bool = true);
+        uint64_t generate_queen_movement(int square_index, bool = true);
+        uint64_t generate_king_movement(int square_index, bool = true);
+
+        using MoveGenerator = uint64_t (ChessBoard::*)(int, bool);
+
+        static MoveGenerator move_generator[12];
 };
