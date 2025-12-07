@@ -19,16 +19,7 @@ class ChessBoard: public godot::Node{
         enum Pieces {
             Pawn, Rook, Knight, Bishop, Queen, King, EnPassant
         };
-        const char* to_UCI[64] = {
-            "h1", "g1", "f1", "e1", "d1", "c1", "b1", "a1",
-            "h2", "g2", "f2", "e2", "d2", "c2", "b2", "a2",
-            "h3", "g3", "f3", "e3", "d3", "c3", "b3", "a3",
-            "h4", "g4", "f4", "e4", "d4", "c4", "b4", "a4",
-            "h5", "g5", "f5", "e5", "d5", "c5", "b5", "a5",
-            "h6", "g6", "f6", "e6", "d6", "c6", "b6", "a6",
-            "h7", "g7", "f7", "e7", "d7", "c7", "b7", "a7",
-            "h8", "g8", "f8", "e8", "d8", "c8", "b8", "a8"
-        };
+        static const char* to_UCI[64];
         struct GameState {
         // Bitboards
             uint64_t color[2];
@@ -43,10 +34,10 @@ class ChessBoard: public godot::Node{
 
         };
         GameState Board;
-        const uint64_t HORIZONTAL = 0x00000000000000FF;
-        const uint64_t VERTICAL = 0x0101010101010101;
-        const uint64_t DIAGONAL_L = 0x8040201008040201;
-        const uint64_t DIAGONAL_R = 0x0102040810204080;
+        static const uint64_t HORIZONTAL = 0x00000000000000FF;
+        static const uint64_t VERTICAL = 0x0101010101010101;
+        static const uint64_t DIAGONAL_L = 0x8040201008040201;
+        static const uint64_t DIAGONAL_R = 0x0102040810204080;
     public:
         void reset_board();
         void generate_board(godot::String board);
@@ -54,10 +45,10 @@ class ChessBoard: public godot::Node{
     protected:
         static void _bind_methods();
         void generate_moves();
-        GameState fen_to_bit(godot::String board);
-        godot::String bit_to_fen(GameState board);
-        pair<int, int> index_to_rankfile(int square_index) {return {square_index % 8, square_index / 8};}; // Rank, File
-        uint64_t mirrorHorizontal (uint64_t x);
+        static GameState fen_to_bit(godot::String board);
+        static godot::String bit_to_fen(GameState board);
+        static pair<int, int> index_to_rankfile(int square_index) {return {square_index % 8, square_index / 8};}; // Rank, File
+        static uint64_t mirrorHorizontal (uint64_t x);
         uint64_t pop_least_significant(uint64_t* bitboard) {
             unsigned long popped_index;
             _BitScanForward64(&popped_index, *bitboard);
