@@ -142,7 +142,7 @@ func _input(event: InputEvent) -> void:
 		if event is InputEventMouse:
 			last_mouse_event = event
 			moved_on_edit = true
-   
+	
 
 # 2D, 3D, Script, Game, or AssetLib
 var tab_open: String = "2D"

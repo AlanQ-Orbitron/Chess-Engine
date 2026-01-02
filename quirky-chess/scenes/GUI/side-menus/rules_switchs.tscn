@@ -1,0 +1,33 @@
+[gd_scene load_steps=7 format=3 uid="uid://d1o4djvn8l00d"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ljepc"]
+bg_color = Color(1, 1, 1, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lxmpu"]
+bg_color = Color(1, 1, 1, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kx014"]
+bg_color = Color(1, 1, 1, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jnkld"]
+bg_color = Color(1, 1, 1, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_43lnx"]
+bg_color = Color(1, 1, 1, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6245h"]
+bg_color = Color(1, 1, 1, 0)
+
+[node name="Rules Switchs" type="CheckButton"]
+offset_right = 70.0
+offset_bottom = 23.0
+scale = Vector2(2, 2)
+theme_override_colors/icon_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_disabled_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_ljepc")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_lxmpu")
+theme_override_styles/hover = SubResource("StyleBoxFlat_kx014")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_jnkld")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_43lnx")
+theme_override_styles/focus = SubResource("StyleBoxFlat_6245h")
+text = "Text"

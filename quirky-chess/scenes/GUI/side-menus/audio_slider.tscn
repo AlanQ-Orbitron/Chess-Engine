@@ -1,0 +1,31 @@
+[gd_scene load_steps=2 format=3 uid="uid://c7ma7tbq5ryjn"]
+
+[ext_resource type="Script" uid="uid://big5qv35wbai4" path="res://scenes/GUI/side-menus/audio_slider.gd" id="1_ihion"]
+
+[node name="AudioSlider" type="HBoxContainer"]
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -11.5
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ihion")
+
+[node name="Image" type="TextureRect" parent="."]
+layout_mode = 2
+
+[node name="Text" type="Label" parent="."]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Text"
+
+[node name="HSlider" type="HSlider" parent="."]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+value = 100.0
+tick_count = 100
+
+[connection signal="value_changed" from="HSlider" to="." method="_on_h_slider_value_changed"]
