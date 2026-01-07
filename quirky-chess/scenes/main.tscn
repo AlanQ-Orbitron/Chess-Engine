@@ -19,7 +19,7 @@
 [ext_resource type="AudioStream" uid="uid://0iubbpbpvwya" path="res://assets/sound/songtracks/pixabay/soft-piano-music-312509.mp3" id="9_2wyq8"]
 [ext_resource type="Script" uid="uid://dnc4cwby0rv56" path="res://scenes/audio_stream_player.gd" id="10_0ld40"]
 [ext_resource type="PackedScene" uid="uid://d0vgs15bd210w" path="res://scenes/GUI/menu_buttons.tscn" id="16_gqmmt"]
-[ext_resource type="PackedScene" uid="uid://bybfcdskk431k" path="res://scenes/GUI/side-menus/music_menu.tscn" id="17_yc10j"]
+[ext_resource type="PackedScene" uid="uid://bybfcdskk431k" path="res://scenes/GUI/side-menus/settings_menu.tscn" id="17_yc10j"]
 [ext_resource type="Script" uid="uid://kducscnrbdof" path="res://scenes/GUI/menu.gd" id="18_jscy8"]
 [ext_resource type="Script" uid="uid://olicmho72epv" path="res://scenes/ignore-mouse.gd" id="19_yc10j"]
 [ext_resource type="PackedScene" uid="uid://w6vke6y5iuqg" path="res://scenes/GUI/side-menus/ruleset_menu.tscn" id="21_pm3ni"]
@@ -147,7 +147,7 @@ sideMenu = NodePath("../../../../SideMenu/Ruleset Menu")
 [node name="Music" parent="HBoxContainer/Menu/MarginContainer/VBoxContainer" index="4" node_paths=PackedStringArray("sideMenu") instance=ExtResource("16_gqmmt")]
 layout_mode = 2
 text = "Music"
-sideMenu = NodePath("../../../../SideMenu/Music Menu")
+sideMenu = NodePath("../../../../SideMenu/Settings")
 
 [node name="SideMenu" type="Control" parent="HBoxContainer"]
 unique_name_in_owner = true
@@ -173,7 +173,7 @@ texture = ExtResource("5_o6xl0")
 stretch_mode = 4
 script = ExtResource("18_jscy8")
 
-[node name="Music Menu" parent="HBoxContainer/SideMenu" instance=ExtResource("17_yc10j")]
+[node name="Settings" parent="HBoxContainer/SideMenu" instance=ExtResource("17_yc10j")]
 visible = false
 custom_minimum_size = Vector2(0, 0)
 layout_mode = 1

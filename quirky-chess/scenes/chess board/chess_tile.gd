@@ -9,6 +9,8 @@ const AtlasToFen: Dictionary = {
 	Vector2i(0, 5) : "k", Vector2i(1, 5) : "K"
 }
 
+var board: ChessBoard
+
 func localized(pos: Vector2) -> Vector2i:
 	return local_to_map(to_local(pos))
 
@@ -57,7 +59,13 @@ func setHighlights(piece: Dictionary, moves: Array) -> void:
 
 func moveTo(piece: Dictionary, pos: Vector2, legalMoves: Array) -> bool:
 	var coords: Vector2i = invertY(localized(pos))
-	if UCISink(piece.get("position")) + UCISink(coords) in legalMoves:
+	var move: String = UCISink(piece.get("position")) + UCISink(coords)
+	var pieces_type: String
+	if move in legalMoves:
+		pieces_type = AtlasToFen.get(piece.get("pieceType"))
+		var sanityCheck: bool = board.move_to(pieces_type + move)
+		if !sanityCheck:
+			printerr("Move To Error")
 		clearCell(piece.get("position"))
 		piece.set("position", coords)
 		setPiece(piece)

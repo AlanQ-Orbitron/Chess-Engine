@@ -6,6 +6,7 @@
 #include "godot_cpp/variant/string.hpp"
 #include "godot_cpp/variant/vector2.hpp"
 #include <cstdint>
+#include <string>
 #include <utility>
 #include <unordered_map>
 
@@ -47,11 +48,37 @@ class ChessBoard: public godot::Node{
         struct ShapeMask {
             static constexpr Mask HORIZONTAL {0x00000000000000FF, 8, 1 };
             static constexpr Mask VERTICAL {0x0101010101010101, 1, 1 };
-            static constexpr Mask DIAGONAL_L = {0x8040201008040201, 8, 8 };
-            static constexpr Mask DIAGONAL_R = {0x0102040810204080, 8, 8 };
+            static constexpr Mask DIAGONAL_L {0x8040201008040201, 8, 8 };
+            static constexpr Mask DIAGONAL_R {0x0102040810204080, 8, 8 };
             static constexpr Mask KNIGHT_SHAPE {0x0000000A1100110A, 5, 5};
             static constexpr Mask KING_SHAPE {0x0000000000070707, 3, 3};
+            static constexpr Mask BPAWN_SHAPE {0x0000000000000005, 3, 3};
+            static constexpr Mask WPAWN_SHAPE {0x0000000000050000, 3, 3};
         };
+
+        struct PieceMove {
+            uint64_t (ChessBoard::*generate_base)(int square_index, bool is_white);
+            uint64_t (*modifier)(uint64_t base_moves, const GameState& state, bool is_white) = nullptr;
+        };
+        
+        static PieceMove piece_moves[6];
+
+        struct RuleSet {
+            bool capture_the_king;
+            bool alicorn_promotion;
+            bool giant_pawns;
+            bool lancer;
+            bool is_bounce;
+            bool is_reflect;
+            bool amazon;
+            bool triple_move_pawns;
+        };
+
+        struct RankFile {
+            int rank;
+            int file;
+        };
+
 
     public:
         void reset_board();

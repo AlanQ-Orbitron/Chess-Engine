@@ -53,6 +53,7 @@ func _input(event: InputEvent) -> void:
 
 
 func _ready() -> void:
+	chess_pieces.board = board
 	board.generate_board(chess_pieces.boardToFen() + " w KQkq - 0 1")
 	#menu.connect("updateSettings", Callable(self, "setSettings"))
 

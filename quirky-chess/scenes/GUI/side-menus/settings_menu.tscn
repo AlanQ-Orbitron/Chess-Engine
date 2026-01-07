@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://kducscnrbdof" path="res://scenes/GUI/menu.gd" id="1_gd78s"]
 [ext_resource type="PackedScene" uid="uid://c7ma7tbq5ryjn" path="res://scenes/GUI/side-menus/audio_slider.tscn" id="2_wvpbx"]
 
-[node name="Music Menu" type="Control"]
+[node name="Settings" type="Control"]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 3
 anchors_preset = 15

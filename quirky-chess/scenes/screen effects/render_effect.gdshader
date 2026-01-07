@@ -22,6 +22,7 @@ void fragment() {
 	float b = texture(screen_texture, recentered_uv - offset / chromatic_abbreation_strength).b;
 	vec3 chromatic_abbreation = vec3(r, g, b) * cutoff;
 	
+	
 	chromatic_abbreation -= vintage;
 	COLOR = vec4(chromatic_abbreation, 1.0);
 }
