@@ -6,24 +6,14 @@
 #include "godot_cpp/variant/string.hpp"
 #include "godot_cpp/variant/vector2.hpp"
 #include <cstdint>
-#include <string>
 #include <utility>
-#include <unordered_map>
+#include "board_utility.hpp"
 
 using namespace std;
 
 class ChessBoard: public godot::Node{
     GDCLASS(ChessBoard, Node)
     protected:
-        enum Color {
-            Black, White
-        };
-        enum Pieces {
-            Pawn, Rook, Knight, Bishop, Queen, King, EnPassant
-        };
-        static const char* to_UCI[64];
-        static const std::unordered_map<string, int> to_index;
-        static const std::unordered_map<string, pair<int, int>> to_pieces;
         struct GameState {
         // Bitboards
             uint64_t color[2];
