@@ -13,7 +13,7 @@ enum Color {
 };
 
 enum Pieces {
-    Pawn, Rook, Knight, Bishop, Queen, King, EnPassant
+    Pawn, Rook, Knight, Bishop, Queen, King
 };
 
 static const char* to_UCI[64] = {

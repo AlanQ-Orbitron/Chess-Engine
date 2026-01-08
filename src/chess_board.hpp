@@ -1,5 +1,9 @@
 #pragma once
 
+// IWYU pragma: begin_exports
+#include "board_utilities/includer.hpp"
+// IWYU pragma: end_exports
+
 #include "godot_cpp/classes/node.hpp"
 #include "godot_cpp/variant/array.hpp"
 #include "godot_cpp/variant/dictionary.hpp"
@@ -7,69 +11,12 @@
 #include "godot_cpp/variant/vector2.hpp"
 #include <cstdint>
 #include <utility>
-#include "board_utility.hpp"
+
 
 using namespace std;
 
 class ChessBoard: public godot::Node{
     GDCLASS(ChessBoard, Node)
-    protected:
-        struct GameState {
-        // Bitboards
-            uint64_t color[2];
-            uint64_t pieces[7];
-            uint64_t attack_boards[2][6][64];
-            uint64_t total_attack[2];
-            uint64_t pin;
-            uint64_t check;
-
-            // States
-            uint8_t castling;
-            bool white_to_move = false;
-            uint8_t halfmove_clock;
-            uint16_t fullmove_number;
-
-            //Ruleset
-            bool is_capture_the_king = false;
-
-        };
-        GameState Board;
-        struct Mask {uint64_t mask; int width; int height;};
-        struct ShapeMask {
-            static constexpr Mask HORIZONTAL {0x00000000000000FF, 8, 1 };
-            static constexpr Mask VERTICAL {0x0101010101010101, 1, 1 };
-            static constexpr Mask DIAGONAL_L {0x8040201008040201, 8, 8 };
-            static constexpr Mask DIAGONAL_R {0x0102040810204080, 8, 8 };
-            static constexpr Mask KNIGHT_SHAPE {0x0000000A1100110A, 5, 5};
-            static constexpr Mask KING_SHAPE {0x0000000000070707, 3, 3};
-            static constexpr Mask BPAWN_SHAPE {0x0000000000000005, 3, 3};
-            static constexpr Mask WPAWN_SHAPE {0x0000000000050000, 3, 3};
-        };
-
-        struct PieceMove {
-            uint64_t (ChessBoard::*generate_base)(int square_index, bool is_white);
-            uint64_t (*modifier)(uint64_t base_moves, const GameState& state, bool is_white) = nullptr;
-        };
-        
-        static PieceMove piece_moves[6];
-
-        struct RuleSet {
-            bool capture_the_king;
-            bool alicorn_promotion;
-            bool giant_pawns;
-            bool lancer;
-            bool is_bounce;
-            bool is_reflect;
-            bool amazon;
-            bool triple_move_pawns;
-        };
-
-        struct RankFile {
-            int rank;
-            int file;
-        };
-
-
     public:
         void reset_board();
         void generate_board(godot::String board);
@@ -77,6 +24,7 @@ class ChessBoard: public godot::Node{
         godot::Array get_valid_moves();
         void set_settings(godot::Dictionary settings);
     protected:
+        GameState Board;
         static void _bind_methods();
         void generate_moves();
         static GameState fen_to_bit(godot::String board);
@@ -92,25 +40,25 @@ class ChessBoard: public godot::Node{
 
     private:
         void set_board(godot::Dictionary board) {
-            Board.color[White] = board["white_pieces"];
-            Board.color[Black] = board["black_pieces"];
-            Board.pieces[Pawn] = board["pawns"];
-            Board.pieces[Rook] = board["rooks"];
-            Board.pieces[Knight] = board["knights"];
-            Board.pieces[Bishop] = board["bishops"];
-            Board.pieces[Queen] = board["queens"];
-            Board.pieces[King] = board["kings"];
+            Board.bitboards.color[White] = board["white_pieces"];
+            Board.bitboards.color[Black] = board["black_pieces"];
+            Board.bitboards.pieces[Pawn] = board["pawns"];
+            Board.bitboards.pieces[Rook] = board["rooks"];
+            Board.bitboards.pieces[Knight] = board["knights"];
+            Board.bitboards.pieces[Bishop] = board["bishops"];
+            Board.bitboards.pieces[Queen] = board["queens"];
+            Board.bitboards.pieces[King] = board["kings"];
         };
         godot::Dictionary get_board() const {
             godot::Dictionary board;
-            board["white_pieces"] = Board.color[White];
-            board["black_pieces"] = Board.color[Black];
-            board["pawns"] = Board.pieces[Pawn];
-            board["rooks"] = Board.pieces[Rook];
-            board["knights"] = Board.pieces[Knight];
-            board["bishops"] = Board.pieces[Bishop];
-            board["queens"] = Board.pieces[Queen];
-            board["kings"] = Board.pieces[King];
+            board["white_pieces"] = Board.bitboards.color[White];
+            board["black_pieces"] = Board.bitboards.color[Black];
+            board["pawns"] = Board.bitboards.pieces[Pawn];
+            board["rooks"] = Board.bitboards.pieces[Rook];
+            board["knights"] = Board.bitboards.pieces[Knight];
+            board["bishops"] = Board.bitboards.pieces[Bishop];
+            board["queens"] = Board.bitboards.pieces[Queen];
+            board["kings"] = Board.bitboards.pieces[King];
             return board;
         };
         using MoveGenerator = uint64_t (ChessBoard::*)(int, bool);
@@ -118,7 +66,7 @@ class ChessBoard: public godot::Node{
         static MoveGenerator move_generator[6];
         void pawn_promotion_logic(int square_index);
         uint64_t generate_h_quintessence(int square_index, uint64_t mask, uint64_t pieces);
-        uint64_t generate_shape_translation(int square_index, Mask mask);
+        uint64_t generate_shape_translation(int square_index, ShapeMask::Mask mask);
         uint64_t generate_pawn_movement(int square_index, bool is_white);
         uint64_t generate_rook_movement(int square_index, bool = true);
         uint64_t generate_knight_movement(int square_index, bool = true);
