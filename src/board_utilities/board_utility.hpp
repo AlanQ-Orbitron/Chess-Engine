@@ -1,20 +1,16 @@
 #pragma once
+#include <climits>
 #include <cstdint>
 #include <stdlib.h>
 #include <unordered_map>
+#include <utility>
+#include <string>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
+#include "chess_data.hpp"
 
-using namespace godot;
 using namespace std;
 
-enum Color {
-    Black, White
-};
-
-enum Pieces {
-    Pawn, Rook, Knight, Bishop, Queen, King
-};
 
 static const char* to_UCI[64] = {
     "h1", "g1", "f1", "e1", "d1", "c1", "b1", "a1",
@@ -38,15 +34,67 @@ static const std::unordered_map<string, int> to_index = {
     {"h8", 56}, {"g8", 57}, {"f8", 58}, {"e8", 59}, {"d8", 60}, {"c8", 61}, {"b8", 62}, {"a8", 63}
 };
 
-static const std::unordered_map<string, pair<int, int>> to_pieces = {
-    {"P", {White, Pawn}}, {"p", {Black, Pawn}},
-    {"R", {White, Rook}}, {"r", {Black, Rook}},
-    {"N", {White, Knight}}, {"n", {Black, Knight}},
-    {"B", {White, Bishop}}, {"b", {Black, Bishop}},
-    {"Q", {White, Queen}}, {"q", {Black, Queen}},
-    {"K", {White, King}}, {"k", {Black, King}}
+static const std::unordered_map<string, pair<Color, Pieces>> to_pieces = {
+    {"P", {Color::White, Pieces::Pawn}},   {"p", {Color::Black, Pieces::Pawn}},
+    {"R", {Color::White, Pieces::Rook}},   {"r", {Color::Black, Pieces::Rook}},
+    {"N", {Color::White, Pieces::Knight}}, {"n", {Color::Black, Pieces::Knight}},
+    {"B", {Color::White, Pieces::Bishop}}, {"b", {Color::Black, Pieces::Bishop}},
+    {"Q", {Color::White, Pieces::Queen}},  {"q", {Color::Black, Pieces::Queen}},
+    {"K", {Color::White, Pieces::King}},   {"k", {Color::Black, Pieces::King}}
 };
+// Helper Methods
 
+
+static constexpr RankFile index_to_rankfile(int square_index) {return {square_index % 8, square_index / 8};}; // Rank, File
+
+
+inline uint64_t pop_least_significant(uint64_t* bitboard) {
+    unsigned long popped_index;
+    _BitScanForward64(&popped_index, *bitboard);
+    *bitboard &= *bitboard -1;
+    return static_cast<int>(popped_index);
+}
+
+inline void fen_to_bit(godot::String string_board, GameState &board) {
+    
+    auto process_position = [](godot::String state, char32_t start, char32_t end) {
+        godot::String result;
+        for (int i = 0; i < state.length(); i++) {
+            char32_t c = state[i];
+            result += (c >= start && c <= end) ? "1" : (c >= U'0' && c <= U'9') ? godot::String("0").repeat(c - U'0') : "0";
+        }
+        return result;
+    };
+
+    auto convert_to_binary = [](godot::String string_binary) {
+        return stoull(string_binary.utf8().get_data(), nullptr, 2);
+    };
+
+    // Only works with standard FEN chess notation
+    godot::Array states = string_board.split(" ");
+    godot::String position = godot::String(states[0]).replace("/", "");
+    board.states.white_to_move = (states[1] == godot::String("w"));
+
+    board.bitboards.color[int(Color::White)] = convert_to_binary(process_position(position, U'B', U'R'));
+    board.bitboards.color[int(Color::Black)] = convert_to_binary(process_position(position, U'b', U'r'));
+    position = position.to_lower();
+
+    board.bitboards.pieces[int(Pieces::Pawn)]   = convert_to_binary(process_position(position, U'p', U'p'));
+    board.bitboards.pieces[int(Pieces::Rook)]   = convert_to_binary(process_position(position, U'r', U'r'));
+    board.bitboards.pieces[int(Pieces::Knight)] = convert_to_binary(process_position(position, U'n', U'n'));
+    board.bitboards.pieces[int(Pieces::Bishop)] = convert_to_binary(process_position(position, U'b', U'b'));
+    board.bitboards.pieces[int(Pieces::Queen)]  = convert_to_binary(process_position(position, U'q', U'q'));
+    board.bitboards.pieces[int(Pieces::King)]   = convert_to_binary(process_position(position, U'k', U'k'));
+}
+
+
+// String ChessBoard::bit_to_fen(ChessBoard::GameState board)
+// {
+    
+// }
+
+
+// Transformation
 
 inline constexpr uint64_t reverse_bit(uint64_t x) { /*Not mine*/
     x = ((x >> 1)  & 0x5555555555555555ULL) | ((x & 0x5555555555555555ULL) << 1);
@@ -88,4 +136,36 @@ inline uint64_t cw90degrees(uint64_t bitboard) {
 }
 inline uint64_t ccw90degrees(uint64_t bitboard) {
     return flipVertical(flipDiag(bitboard));
+}
+
+// Bitboard functions
+
+inline uint64_t generate_h_quintessence(int square_index, uint64_t mask, uint64_t pieces) { /*Stollen from https://www.chessprogramming.org/Hyperbola_Quintessence then translated to c++*/ 
+   uint64_t forward, reverse;
+   forward = (pieces & mask) - (1ULL << square_index);
+   reverse = reverse_bit(forward);
+   forward -= 1ULL << square_index;
+   reverse -= reverse_bit(1ULL << square_index);
+   forward ^= reverse_bit(reverse);
+   forward &= mask;
+   return forward;
+}
+
+inline uint64_t generate_shape_translation(int square_index, ShapeMask::Mask mask) {
+    RankFile rankfile_index = index_to_rankfile(square_index);
+    int radius = static_cast<int> (ceil(mask.width / 2.0));
+    int horizontal_index = (rankfile_index.rank - radius + 1);
+    int vertical_index = ((rankfile_index.file - radius + 1) * 8);
+    int left_index = (rankfile_index.rank + radius) * 8;
+    int right_index = ((7 - rankfile_index.rank) + radius) * 8;
+    int top_index = (rankfile_index.file + radius) * 8;
+    int bottom_index = ((7 - rankfile_index.file) + radius) * 8;
+    uint64_t masked_shape = ccw90degrees(
+        ((left_index < 64) ? ULLONG_MAX << left_index : 0ULL) | 
+         ((right_index < 64) ? ULLONG_MAX >> right_index : 0ULL)) | 
+        ((top_index < 64) ? ULLONG_MAX << top_index : 0ULL) | 
+        ((bottom_index < 64) ? ULLONG_MAX >> bottom_index : 0ULL);
+    mask.mask = (horizontal_index >= 0) ? mask.mask << horizontal_index : mask.mask >> abs(horizontal_index);
+    mask.mask = (vertical_index >= 0) ? mask.mask << vertical_index : mask.mask >> abs(vertical_index);
+    return mask.mask & ~(masked_shape);
 }

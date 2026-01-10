@@ -4,7 +4,8 @@
 struct GameState;
 
 struct Rule {
-    virtual uint64_t apply(int square_index, int color, const GameState &board) const = 0;
+    virtual void pre_proccessing(int square_index, const bool &is_white, const GameState &board, ShapeGroup &mask_group) const = 0;
+    virtual void post_proccessing(int square_index, const bool &is_white, const GameState &board, ShapeGroup &mask_group) const = 0;
 
     virtual ~Rule() = default;
 };
