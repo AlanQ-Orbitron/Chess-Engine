@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dtvvo52ucaf2t"
+path="res://.godot/imported/melancholy_of_the_sky.mp3-e40a12bb13e453e08373102b090a9e1b.mp3str"
+
+[deps]
+
+source_file="res://assets/sound/songtracks/zatter's nonsense/melancholy_of_the_sky.mp3"
+dest_files=["res://.godot/imported/melancholy_of_the_sky.mp3-e40a12bb13e453e08373102b090a9e1b.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

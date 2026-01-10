@@ -1,0 +1,80 @@
+[gd_scene load_steps=20 format=4 uid="uid://dfuutgfglne6l"]
+
+[ext_resource type="PackedScene" uid="uid://bmr3y21j8mc8b" path="res://scenes/chess board/board.tscn" id="1_iea4b"]
+[ext_resource type="Script" uid="uid://dg61twibheqln" path="res://scenes/chess board/chess_engine.gd" id="1_mc8d8"]
+[ext_resource type="Texture2D" uid="uid://dnsvklgt61lcy" path="res://assets/Markers.svg" id="2_o4g7e"]
+[ext_resource type="PackedScene" uid="uid://b2grq172gg2b0" path="res://scenes/chess board/chess_tile.tscn" id="2_xegwo"]
+[ext_resource type="Script" uid="uid://cab0nl2hwmd1s" path="res://scenes/chess board/chess_tile.gd" id="5_2j0vo"]
+[ext_resource type="PackedScene" uid="uid://bekpa1pfft48x" path="res://assets/particals/partical_emitor.tscn" id="6_hcsh3"]
+[ext_resource type="PackedScene" uid="uid://bv56ueu58kve5" path="res://scenes/chess board/pieces.tscn" id="6_rommo"]
+[ext_resource type="Script" uid="uid://cnywm3f107tf7" path="res://scenes/chess board/pieces.gd" id="7_2j0vo"]
+[ext_resource type="Script" uid="uid://d2dxjbosem8dp" path="res://scenes/chess board/audio_stream_player.gd" id="8_2mk6t"]
+[ext_resource type="AudioStream" uid="uid://c5b8vej5nj1cj" path="res://assets/sound/chess moves/chess_move_1.mp3" id="8_j0ekf"]
+[ext_resource type="AudioStream" uid="uid://di72lfq8h35d6" path="res://assets/sound/chess moves/chess_move_2.mp3" id="9_adi6w"]
+[ext_resource type="AudioStream" uid="uid://3vbc8h4bfpfu" path="res://assets/sound/chess moves/chess_move_3.mp3" id="10_hcsh3"]
+[ext_resource type="AudioStream" uid="uid://j4ulwld23ul5" path="res://assets/sound/chess moves/chess_move_4.mp3" id="11_i71cu"]
+[ext_resource type="AudioStream" uid="uid://c5suc7h2i628y" path="res://assets/sound/chess moves/chess_move_5.mp3" id="12_6i1su"]
+[ext_resource type="AudioStream" uid="uid://7cj7dkcjjl4y" path="res://assets/sound/chess moves/chess_move_6.mp3" id="13_kifl8"]
+[ext_resource type="AudioStream" uid="uid://cf6n8rvfiq5uf" path="res://assets/sound/chess moves/chess_move_7.mp3" id="14_3d3g5"]
+[ext_resource type="AudioStream" uid="uid://c15jr60jei6qw" path="res://assets/sound/chess moves/chess_move_8.mp3" id="15_d7wjo"]
+
+[sub_resource type="Gradient" id="Gradient_6i1su"]
+colors = PackedColorArray(1, 0, 0, 1, 0, 0, 1, 1)
+metadata/_snap_enabled = true
+metadata/_snap_count = 2
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_0vgs3"]
+streams_count = 8
+stream_0/stream = ExtResource("8_j0ekf")
+stream_1/stream = ExtResource("9_adi6w")
+stream_2/stream = ExtResource("10_hcsh3")
+stream_3/stream = ExtResource("11_i71cu")
+stream_4/stream = ExtResource("12_6i1su")
+stream_5/stream = ExtResource("13_kifl8")
+stream_6/stream = ExtResource("14_3d3g5")
+stream_7/stream = ExtResource("15_d7wjo")
+
+[node name="Chess-Engine" type="Node2D"]
+script = ExtResource("1_mc8d8")
+
+[node name="Board" parent="." instance=ExtResource("1_iea4b")]
+position = Vector2(-288, 288)
+tile_map_data = PackedByteArray("AAAAAP//AQAAAAAAAAA=")
+
+[node name="Markers" type="TextureRect" parent="Board"]
+offset_top = -576.0
+offset_right = 576.0
+texture = ExtResource("2_o4g7e")
+metadata/_edit_use_anchors_ = true
+
+[node name="ChessPieces" parent="." instance=ExtResource("2_xegwo")]
+position = Vector2(-360, 288)
+tile_map_data = PackedByteArray("AAAIAPn/AgAAAAAAAAAHAPn/AgAAAAAAAAAGAPn/AgAAAAAAAAAFAPn/AgAAAAAAAAAEAPn/AgAAAAAAAAADAPn/AgAAAAAAAAACAPn/AgAAAAAAAAABAPn/AgAAAAAAAAAFAPj/AgAAAAUAAAAEAPj/AgAAAAQAAAAEAP//AgABAAQAAAAFAP//AgABAAUAAAAIAP//AgABAAEAAAABAP//AgABAAEAAAAIAP7/AgABAAAAAAAHAP7/AgABAAAAAAAGAP7/AgABAAAAAAAFAP7/AgABAAAAAAAEAP7/AgABAAAAAAADAP7/AgABAAAAAAACAP7/AgABAAAAAAABAP7/AgABAAAAAAAHAP//AgABAAIAAAACAP//AgABAAIAAAAGAP//AgABAAMAAAADAP//AgABAAMAAAAGAPj/AgAAAAMAAAADAPj/AgAAAAMAAAAHAPj/AgAAAAIAAAACAPj/AgAAAAIAAAAIAPj/AgAAAAEAAAABAPj/AgAAAAEAAAA=")
+script = ExtResource("5_2j0vo")
+
+[node name="ParticalEmitor" parent="ChessPieces" instance=ExtResource("6_hcsh3")]
+position = Vector2(360, -288)
+emission_sphere_radius = 3.0
+initial_velocity_min = 20.0
+angular_velocity_min = -1.0
+angular_velocity_max = 1.0
+scale_amount_min = 3.0
+scale_amount_max = 8.0
+color = Color(1, 1, 1, 1)
+color_ramp = SubResource("Gradient_6i1su")
+hue_variation_min = -1.0
+hue_variation_max = 1.0
+
+[node name="Highlights" parent="." instance=ExtResource("2_xegwo")]
+position = Vector2(-360, 288)
+tile_map_data = PackedByteArray()
+script = ExtResource("5_2j0vo")
+
+[node name="Pieces" parent="." instance=ExtResource("6_rommo")]
+visible = false
+script = ExtResource("7_2j0vo")
+
+[node name="ChessSounds" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamRandomizer_0vgs3")
+bus = &"SFX"
+script = ExtResource("8_2mk6t")

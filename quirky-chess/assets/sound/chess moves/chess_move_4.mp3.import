@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://j4ulwld23ul5"
+path="res://.godot/imported/chess_move_4.mp3-db5bcd4154ae0202a67f42796ac17fb0.mp3str"
+
+[deps]
+
+source_file="res://assets/sound/chess moves/chess_move_4.mp3"
+dest_files=["res://.godot/imported/chess_move_4.mp3-db5bcd4154ae0202a67f42796ac17fb0.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
