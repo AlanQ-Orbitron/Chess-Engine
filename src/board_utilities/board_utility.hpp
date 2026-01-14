@@ -46,13 +46,11 @@ static const std::unordered_map<std::string, pair<Color, Pieces>> to_pieces = {
 
 
 static constexpr RankFile index_to_rankfile(int square_index) {return {square_index % 8, square_index / 8};}; // Rank, File
-
-
-inline uint64_t pop_least_significant(uint64_t* bitboard) {
-    unsigned long popped_index;
-    _BitScanForward64(&popped_index, *bitboard);
-    *bitboard &= *bitboard -1;
-    return static_cast<int>(popped_index);
+inline uint64_t pop_least_significant(uint64_t *bitboard) {
+	unsigned long popped_index;
+	_BitScanForward64(&popped_index, *bitboard);
+	*bitboard &= *bitboard - 1;
+	return static_cast<int>(popped_index);
 }
 
 inline void fen_to_bit(godot::String string_board, GameState &board) {
