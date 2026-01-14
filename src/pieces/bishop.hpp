@@ -18,4 +18,7 @@ struct Bishop : virtual Piece {
             generate_h_quintessence(square_index, D1, board.bitboards.all_pieces) |
             generate_h_quintessence(square_index, D2, board.bitboards.all_pieces));
     }
+	const ShapeMask::Mask *shapes[2] = { &ShapeMask::DIAGONAL_L, &ShapeMask::DIAGONAL_R };
+	const int direction[4] = { int(Directions::BottomLeft), int(Directions::TopLeft), int(Directions::BottomRight), int(Directions::TopRight) };
+	const Dimensions offsets[4] = { { 0, 0 }, { 7, 7 }, { 7, 0 }, { 0, 7 } };
 };
