@@ -53,36 +53,24 @@ inline uint64_t pop_least_significant(uint64_t *bitboard) {
 	return static_cast<int>(popped_index);
 }
 
-inline void fen_to_bit(godot::String string_board, GameState &board) {
-    
-    auto process_position = [](godot::String state, char32_t start, char32_t end) {
-        godot::String result;
-        for (int i = 0; i < state.length(); i++) {
-            char32_t c = state[i];
-            result += (c >= start && c <= end) ? "1" : (c >= U'0' && c <= U'9') ? godot::String("0").repeat(c - U'0') : "0";
-        }
-        return result;
-    };
+inline void string_to_bit(godot::String string_board, GameState &board) {
+	std::string cpp_string{};
+	pair<Color, Pieces> piece_type{};
+	int i = 0;
 
-    auto convert_to_binary = [](godot::String string_binary) {
-        return stoull(string_binary.utf8().get_data(), nullptr, 2);
-    };
-
-    // Only works with standard FEN chess notation
-    godot::Array states = string_board.split(" ");
-    godot::String position = godot::String(states[0]).replace("/", "");
-    board.states.white_to_move = (states[1] == godot::String("w"));
-
-    board.bitboards.color[int(Color::White)] = convert_to_binary(process_position(position, U'B', U'R'));
-    board.bitboards.color[int(Color::Black)] = convert_to_binary(process_position(position, U'b', U'r'));
-    position = position.to_lower();
-
-    board.bitboards.pieces[int(Pieces::Pawn)]   = convert_to_binary(process_position(position, U'p', U'p'));
-    board.bitboards.pieces[int(Pieces::Rook)]   = convert_to_binary(process_position(position, U'r', U'r'));
-    board.bitboards.pieces[int(Pieces::Knight)] = convert_to_binary(process_position(position, U'n', U'n'));
-    board.bitboards.pieces[int(Pieces::Bishop)] = convert_to_binary(process_position(position, U'b', U'b'));
-    board.bitboards.pieces[int(Pieces::Queen)]  = convert_to_binary(process_position(position, U'q', U'q'));
-    board.bitboards.pieces[int(Pieces::King)]   = convert_to_binary(process_position(position, U'k', U'k'));
+	godot::Array states = string_board.reverse().strip_escapes().split(",");
+	for (godot::String s : states) {
+		cpp_string = std::string(s.utf8().get_data());
+		if (cpp_string != "-") {
+			piece_type = to_pieces.at(cpp_string);
+			board.bitboards.piecetype_at_index[i] = piece_type;
+			board.bitboards.color[int(piece_type.first)] |= 1ULL << i;
+			board.bitboards.pieces[int(piece_type.second)] |= 1ULL << i;
+		} else {
+			board.bitboards.piecetype_at_index[i] = { Color::None, Pieces::None };
+		}
+		i++;
+	}
 }
 
 
