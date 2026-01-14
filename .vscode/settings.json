@@ -94,5 +94,6 @@
     "setup.py":false
 },
   "files.eol": "\n",
-  "files.insertFinalNewline": true
+  "files.insertFinalNewline": true,
+  "editor.formatOnSave": true
 }
