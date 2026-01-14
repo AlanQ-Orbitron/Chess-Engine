@@ -34,13 +34,13 @@ static const std::unordered_map<string, int> to_index = {
     {"h8", 56}, {"g8", 57}, {"f8", 58}, {"e8", 59}, {"d8", 60}, {"c8", 61}, {"b8", 62}, {"a8", 63}
 };
 
+static const std::unordered_map<std::string, pair<Color, Pieces>> to_pieces = {
     {"P", {Color::White, Pieces::Pawn}},   {"p", {Color::Black, Pieces::Pawn}},
     {"R", {Color::White, Pieces::Rook}},   {"r", {Color::Black, Pieces::Rook}},
     {"N", {Color::White, Pieces::Knight}}, {"n", {Color::Black, Pieces::Knight}},
     {"B", {Color::White, Pieces::Bishop}}, {"b", {Color::Black, Pieces::Bishop}},
     {"Q", {Color::White, Pieces::Queen}},  {"q", {Color::Black, Pieces::Queen}},
     {"K", {Color::White, Pieces::King}},   {"k", {Color::Black, Pieces::King}}
-static const std::unordered_map<std::string, pair<Color, Pieces>> to_pieces = {
 };
 // Helper Methods
 
