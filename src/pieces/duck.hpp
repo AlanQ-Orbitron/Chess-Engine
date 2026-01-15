@@ -21,11 +21,11 @@ struct Duck : Piece {
             
             /* Check Checker - TODO */
 
-            for (const auto &Rule : board.ruleSet.modified_rules) {Rule->pre_proccessing(*this, board, shape_group);}
+            for (const auto &Rule : board.ruleSet.modified_rules) {Rule->pre_proccessing(*this, is_white, board, shape_group);}
 
             shape_group.movement_bitboard &= ~board.bitboards.all_pieces;
 
-            for (const auto &Rule : board.ruleSet.modified_rules) {Rule->post_proccessing(*this, board, shape_group);}
+            for (const auto &Rule : board.ruleSet.modified_rules) {Rule->post_proccessing(*this, is_white, board, shape_group);}
 
             /*Pin Checker - TODO*/
 
