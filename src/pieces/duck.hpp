@@ -1,14 +1,13 @@
 #pragma once
-#include "board_utilities/chess_data.hpp"
 #include "piece.hpp"
 
 struct Duck : Piece {
     Duck() {piece_type = Pieces::Duck;}
-    void generate_movement_moves(int square_index, GameState &board) const override {
-        shape_group.movement_bitboard = ~board.bitboards.all_pieces;
+    uint64_t generate_movement_moves(int square_index, GameState &board) const override {
+        return ~board.bitboards.all_pieces;
     }
-    void generate_attack_moves(int square_index, GameState &board) const override {
-        shape_group.attack_bitboard = 0ULL;
+    uint64_t generate_attack_moves(int square_index, GameState &board) const override {
+        return 0ULL;
     }
 
     void generate_moves(bool is_white, GameState &board) const override {
@@ -22,11 +21,11 @@ struct Duck : Piece {
             
             /* Check Checker - TODO */
 
-            for (const auto &Rule : board.ruleSet.modified_rules) {Rule->pre_proccessing(square_index, is_white, board, shape_group);}
+            for (const auto &Rule : board.ruleSet.modified_rules) {Rule->pre_proccessing(*this, board, shape_group);}
 
             shape_group.movement_bitboard &= ~board.bitboards.all_pieces;
 
-            for (const auto &Rule : board.ruleSet.modified_rules) {Rule->post_proccessing(square_index, is_white, board, shape_group);}
+            for (const auto &Rule : board.ruleSet.modified_rules) {Rule->post_proccessing(*this, board, shape_group);}
 
             /*Pin Checker - TODO*/
 

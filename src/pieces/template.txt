@@ -1,15 +1,14 @@
 #pragma once
-#include "board_utilities/chess_data.hpp"
 #include "piece.hpp"
 
-struct Blank : Piece {
+struct Blank : virtual Piece {
     Blank() {piece_type = Pieces::Blank;}
-    void generate_movement_moves(int square_index, GameState &board) const override {
+    uint64_t generate_movement_moves(int square_index, GameState &board) const override {
         RankFile rankfile_index = index_to_rankfile(square_index);
-        shape_group.movement_bitboard = movement_bitboard;
+        return movement_bitboard;
     }
-    void generate_attack_moves(int square_index, GameState &board) const override {
+    uint64_t generate_attack_moves(int square_index, GameState &board) const override {
         RankFile rankfile_index = index_to_rankfile(square_index);
-        shape_group.attack_bitboard = attack_bitboard;
+        return attack_bitboard;
     }
 };
