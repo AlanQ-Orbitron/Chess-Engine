@@ -1,9 +1,9 @@
 #pragma once
 
 // IWYU pragma: begin_exports
-#include "board_utilities/chess_data.hpp"
+#include "rules/includer.hpp"
 #include "board_utilities/includer.hpp"
-#include "pieces/a_includer.hpp"
+#include "pieces/includer.hpp"
 // IWYU pragma: end_exports
 
 #include "godot_cpp/classes/node.hpp"
