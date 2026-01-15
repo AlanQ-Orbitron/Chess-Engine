@@ -19,6 +19,15 @@ struct GameState {
         uint64_t total_moves_bitboard[int(Color::Total)][int(MoveType::Total)];
         uint64_t pins[int(Color::Total)];
         uint64_t all_pieces;
+        inline void reset_board() {
+            memset(moves_bitboard, 0, sizeof(moves_bitboard));
+            memset(total_moves_bitboard, 0, sizeof(total_moves_bitboard));
+            memset(pins, 0, sizeof(pins));
+        };
+        inline void reset_piece(){
+            memset(color, 0, sizeof(color));
+            memset(pieces, 0, sizeof(pieces));
+        };
     } bitboards;
 
     struct States {

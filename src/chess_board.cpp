@@ -1,6 +1,5 @@
 #include "chess_board.hpp"
 #include <cstdint>
-#include <cstring>
 #include <string>
 #include <godot_cpp/variant/utility_functions.hpp>
 #include "board_utilities/chess_data.hpp"
@@ -13,6 +12,7 @@ using namespace std;
 
 void ChessBoard::generate_moves() {
     Board.bitboards.all_pieces = Board.bitboards.color[int(Color::White)] | Board.bitboards.color[int(Color::Black)];
+    Board.bitboards.reset_board();
     
     for (const auto &PieceType : Board.ruleSet.enabled_piece_type) {
         PieceType->generate_moves(!Board.states.white_to_move, Board);
@@ -23,14 +23,6 @@ void ChessBoard::generate_moves() {
     }
 }
 
-void ChessBoard::reset_board() {
-    reset_settings();
-    memset(Board.bitboards.color, 0, sizeof(Board.bitboards.color));
-    memset(Board.bitboards.pieces, 0, sizeof(Board.bitboards.pieces));
-    memset(Board.bitboards.moves_bitboard, 0, sizeof(Board.bitboards.moves_bitboard));
-    memset(Board.bitboards.total_moves_bitboard, 0, sizeof(Board.bitboards.total_moves_bitboard));
-    memset(Board.bitboards.pins, 0, sizeof(Board.bitboards.pins));
-}
 
 godot::Array ChessBoard::get_valid_moves() {
     auto generate_attack_list = [this](int color, int piece) {
@@ -73,7 +65,9 @@ void ChessBoard::reset_settings() {
 }
 
 void ChessBoard::generate_board(godot::String board) {
-    reset_board();
+    Board.bitboards.reset_board();
+    Board.bitboards.reset_piece();
+    reset_settings();
     fen_to_bit(board, Board);
 
     /*Convert board to array of index - TODO*/ 
@@ -118,7 +112,6 @@ bool ChessBoard::move_to(godot::String str_move) {
 }
 
 void ChessBoard::_bind_methods() {
-    godot::ClassDB::bind_method(godot::D_METHOD("reset_board"), &ChessBoard::reset_board);
     godot::ClassDB::bind_method(godot::D_METHOD("generate_board", "board"), &ChessBoard::generate_board);
     godot::ClassDB::bind_method(godot::D_METHOD("generate_moves"), &ChessBoard::generate_moves);
     godot::ClassDB::bind_method(godot::D_METHOD("get_valid_moves"), &ChessBoard::get_valid_moves);

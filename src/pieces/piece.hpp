@@ -1,11 +1,11 @@
 #pragma once
 #include "../rules/includer.hpp"
 #include "board_utilities/chess_data.hpp"
-#include <cstdint>
 
 struct Piece {
     mutable ShapeGroup shape_group{};
     mutable bool is_white{};
+    mutable uint64_t rays[8];
     Pieces piece_type{};
     virtual uint64_t generate_movement_moves(int square_index, GameState &board) const = 0;
     virtual uint64_t generate_attack_moves(int square_index, GameState &board) const {

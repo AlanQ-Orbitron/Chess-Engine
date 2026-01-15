@@ -17,7 +17,6 @@ using namespace std;
 class ChessBoard: public godot::Node{
     GDCLASS(ChessBoard, Node)
     public:
-        void reset_board();
         void generate_board(godot::String board);
         bool move_to(godot::String move);
         godot::Array get_valid_moves();
