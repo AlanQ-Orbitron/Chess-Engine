@@ -8,9 +8,6 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 #include "chess_data.hpp"
 
-using namespace std;
-
-
 static const char* to_UCI[64] = {
     "h1", "g1", "f1", "e1", "d1", "c1", "b1", "a1",
     "h2", "g2", "f2", "e2", "d2", "c2", "b2", "a2",
@@ -22,7 +19,7 @@ static const char* to_UCI[64] = {
     "h8", "g8", "f8", "e8", "d8", "c8", "b8", "a8"
 };
 
-static const std::unordered_map<string, int> to_index = {
+static const std::unordered_map<std::string, int> to_index = {
     {"h1", 0}, {"g1", 1}, {"f1", 2}, {"e1", 3}, {"d1", 4}, {"c1", 5}, {"b1", 6}, {"a1", 7},
     {"h2", 8}, {"g2", 9}, {"f2", 10}, {"e2", 11}, {"d2", 12}, {"c2", 13}, {"b2", 14}, {"a2", 15},
     {"h3", 16}, {"g3", 17}, {"f3", 18}, {"e3", 19}, {"d3", 20}, {"c3", 21}, {"b3", 22}, {"a3", 23},
@@ -33,7 +30,7 @@ static const std::unordered_map<string, int> to_index = {
     {"h8", 56}, {"g8", 57}, {"f8", 58}, {"e8", 59}, {"d8", 60}, {"c8", 61}, {"b8", 62}, {"a8", 63}
 };
 
-static const std::unordered_map<string, PieceType> to_pieces = {
+static const std::unordered_map<std::string, PieceType> to_pieces = {
     {"P", {Color::White, Pieces::Pawn}},   {"p", {Color::Black, Pieces::Pawn}},
     {"R", {Color::White, Pieces::Rook}},   {"r", {Color::Black, Pieces::Rook}},
     {"N", {Color::White, Pieces::Knight}}, {"n", {Color::Black, Pieces::Knight}},
@@ -41,11 +38,10 @@ static const std::unordered_map<string, PieceType> to_pieces = {
     {"Q", {Color::White, Pieces::Queen}},  {"q", {Color::Black, Pieces::Queen}},
     {"K", {Color::White, Pieces::King}},   {"k", {Color::Black, Pieces::King}}
 };
+
 // Helper Methods
 
-
 static constexpr RankFile index_to_rankfile(int square_index) {return {square_index % 8, square_index / 8};}; // Rank, File
-
 
 inline uint64_t pop_least_significant(uint64_t* bitboard) {
     unsigned long popped_index;
@@ -66,7 +62,7 @@ inline void fen_to_bit(godot::String string_board, GameState &board) {
     };
 
     auto convert_to_binary = [](godot::String string_binary) {
-        return stoull(string_binary.utf8().get_data(), nullptr, 2);
+        return std::stoull(string_binary.utf8().get_data(), nullptr, 2);
     };
 
     // Only works with standard FEN chess notation
@@ -86,16 +82,10 @@ inline void fen_to_bit(godot::String string_board, GameState &board) {
     board.bitboards.pieces[int(Pieces::King)]   = convert_to_binary(process_position(position, U'k', U'k'));
 }
 
-
-// String ChessBoard::bit_to_fen(ChessBoard::GameState board)
-// {
-    
-// }
-
-
 // Transformation
 
-inline constexpr uint64_t reverse_bit(uint64_t x) { /*Not mine*/
+inline constexpr uint64_t reverse_bit(uint64_t x) { 
+/*Not mine*/
     x = ((x >> 1)  & 0x5555555555555555ULL) | ((x & 0x5555555555555555ULL) << 1);
     x = ((x >> 2)  & 0x3333333333333333ULL) | ((x & 0x3333333333333333ULL) << 2);
     x = ((x >> 4)  & 0x0F0F0F0F0F0F0F0FULL) | ((x & 0x0F0F0F0F0F0F0F0FULL) << 4);
@@ -104,7 +94,8 @@ inline constexpr uint64_t reverse_bit(uint64_t x) { /*Not mine*/
     x = (x >> 32) | (x << 32);
     return x;
 }
-inline constexpr uint64_t flipDiag(uint64_t x) { /*Stollen from https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating then translated to c++*/
+inline constexpr uint64_t flipDiag(uint64_t x) { 
+/*Stollen from https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating then translated to c++*/
    uint64_t t = 0ULL;
    const uint64_t k1 = 0x5500550055005500;
    const uint64_t k2 = 0x3333000033330000;
@@ -117,7 +108,8 @@ inline constexpr uint64_t flipDiag(uint64_t x) { /*Stollen from https://www.ches
    x ^=       t ^ (t >>  7) ;
    return x;
 }
-inline constexpr uint64_t mirrorHorizontal (uint64_t x) { /*Stollen from https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating then translated to c++*/
+inline constexpr uint64_t mirrorHorizontal (uint64_t x) { 
+/*Stollen from https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating then translated to c++*/
    const uint64_t k1 = 0x5555555555555555;
    const uint64_t k2 = 0x3333333333333333;
    const uint64_t k4 = 0x0f0f0f0f0f0f0f0f;
@@ -127,19 +119,14 @@ inline constexpr uint64_t mirrorHorizontal (uint64_t x) { /*Stollen from https:/
    return x;
 }
 
-inline uint64_t flipVertical(uint64_t x) { /*Stollen from https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating then translated to c++*/
-   return _byteswap_uint64(x);
-}
-inline uint64_t cw90degrees(uint64_t bitboard) {
-    return(flipDiag(bitboard));
-}
-inline uint64_t ccw90degrees(uint64_t bitboard) {
-    return flipVertical(flipDiag(bitboard));
-}
+inline uint64_t flipVertical(uint64_t x) {return _byteswap_uint64(x);} /*Stollen from https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating then translated to c++*/
+inline uint64_t cw90degrees(uint64_t bitboard) {return(flipDiag(bitboard));}
+inline uint64_t ccw90degrees(uint64_t bitboard) {return flipVertical(flipDiag(bitboard));}
 
 // Bitboard functions
 
-inline uint64_t generate_h_quintessence(int square_index, uint64_t mask, uint64_t pieces) { /*Stollen from https://www.chessprogramming.org/Hyperbola_Quintessence then translated to c++*/ 
+inline uint64_t generate_h_quintessence(int square_index, uint64_t mask, uint64_t pieces) { 
+/*Stollen from https://www.chessprogramming.org/Hyperbola_Quintessence then translated to c++*/ 
    uint64_t forward, reverse;
    forward = (pieces & mask) - (1ULL << square_index);
    reverse = reverse_bit(forward);
@@ -160,10 +147,10 @@ inline uint64_t generate_shape_translation(int square_index, ShapeMask::Mask mas
     int top_index = (rankfile_index.file + radius) * 8;
     int bottom_index = ((7 - rankfile_index.file) + radius) * 8;
     uint64_t masked_shape = ccw90degrees(
-        ((left_index < 64) ? ULLONG_MAX << left_index : 0ULL) | 
-         ((right_index < 64) ? ULLONG_MAX >> right_index : 0ULL)) | 
-        ((top_index < 64) ? ULLONG_MAX << top_index : 0ULL) | 
-        ((bottom_index < 64) ? ULLONG_MAX >> bottom_index : 0ULL);
+        ( (left_index < 64) ? ULLONG_MAX << left_index : 0ULL) | 
+        ( (right_index < 64) ? ULLONG_MAX >> right_index : 0ULL) ) | 
+        ( (top_index < 64) ? ULLONG_MAX << top_index : 0ULL) | 
+        ( (bottom_index < 64) ? ULLONG_MAX >> bottom_index : 0ULL);
     mask.mask = (horizontal_index >= 0) ? mask.mask << horizontal_index : mask.mask >> abs(horizontal_index);
     mask.mask = (vertical_index >= 0) ? mask.mask << vertical_index : mask.mask >> abs(vertical_index);
     return mask.mask & ~(masked_shape);
