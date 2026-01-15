@@ -2,11 +2,9 @@
 #include <cstdint>
 #include <string>
 #include <godot_cpp/variant/utility_functions.hpp>
-#include "board_utilities/chess_data.hpp"
 #include "godot_cpp/variant/array.hpp"
 #include "godot_cpp/variant/string.hpp"
 #include <godot_cpp/core/class_db.hpp>
-#include <utility>
 
 using namespace std;
 
@@ -83,12 +81,12 @@ bool ChessBoard::move_to(godot::String str_move) {
     string move = string(str_move.utf8().get_data());
     int from = to_index.at(move.substr(1, 2));
     int to = to_index.at(move.substr(3, 2));
-    pair type = to_pieces.at(move.substr(0, 1));
+    PieceType type = to_pieces.at(move.substr(0, 1));
 
     if (get_valid_moves().has(str_move.substr(1, 2) + str_move.substr(3, 2))) {
         Board.states.white_to_move = !Board.states.white_to_move;
         if (move.length() == 6) {
-            pair promotion_type = to_pieces.at(move.substr(move.length() - 1, 1));
+            PieceType promotion_type = to_pieces.at(move.substr(move.length() - 1, 1));
         }
         uint64_t from_square = 1ULL << from;
         uint64_t to_square = 1ULL << to;
@@ -102,8 +100,8 @@ bool ChessBoard::move_to(godot::String str_move) {
             Board.bitboards.color[int(Color::Black)] &= ~to_square;
             Board.bitboards.pieces[piece] &= ~to_square;
         }
-        Board.bitboards.color[int(type.first)] |= to_square;
-        Board.bitboards.pieces[int(type.second)] |= to_square;
+        Board.bitboards.color[int(type.color)] |= to_square;
+        Board.bitboards.pieces[int(type.piece)] |= to_square;
 
         generate_moves();
         return true;

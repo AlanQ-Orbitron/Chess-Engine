@@ -6,16 +6,16 @@ struct Piece {
     mutable ShapeGroup shape_group{};
     mutable bool is_white{};
     mutable uint64_t rays[8];
+    mutable int square_index{};
     Pieces piece_type{};
+
     virtual uint64_t generate_movement_moves(int square_index, GameState &board) const = 0;
-    virtual uint64_t generate_attack_moves(int square_index, GameState &board) const {
-        return shape_group.movement_bitboard;
-    }
+    virtual uint64_t generate_attack_moves(int square_index, GameState &board) const {return shape_group.movement_bitboard;}
 
     virtual void generate_moves(bool is_white, GameState &board) const {
         uint64_t full = board.bitboards.color[is_white] & board.bitboards.pieces[int(piece_type)];
-        
         this->is_white = is_white;
+
         while (full) {
             int square_index = pop_least_significant(&full);
             shape_group.movement_bitboard = generate_movement_moves(square_index, board);
@@ -23,12 +23,12 @@ struct Piece {
             
             /* Check Checker - TODO */
 
-            for (const auto &Rule : board.ruleSet.modified_rules) {Rule->pre_proccessing(*this, board, shape_group);}
+            for (const auto &Rule : board.ruleSet.modified_rules) {Rule->pre_proccessing(*this, is_white, board, shape_group);}
 
             shape_group.movement_bitboard &= ~board.bitboards.all_pieces;
             shape_group.attack_bitboard &= board.bitboards.color[!is_white];
 
-            for (const auto &Rule : board.ruleSet.modified_rules) {Rule->post_proccessing(*this, board, shape_group);}
+            for (const auto &Rule : board.ruleSet.modified_rules) {Rule->post_proccessing(*this, is_white, board, shape_group);}
 
             /*Pin Checker - TODO*/
 

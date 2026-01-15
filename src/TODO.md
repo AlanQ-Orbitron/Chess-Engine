@@ -2,7 +2,7 @@
 
 ## Engine
 - [x] Bitboard refactor
-- [_] Pinning
+- [_] =Pinning=
 - [_] Castling
 - [_] Promotion
 - [_] Indexing Pieces

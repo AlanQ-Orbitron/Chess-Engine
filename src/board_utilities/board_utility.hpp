@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <stdlib.h>
 #include <unordered_map>
-#include <utility>
 #include <string>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
@@ -34,7 +33,7 @@ static const std::unordered_map<string, int> to_index = {
     {"h8", 56}, {"g8", 57}, {"f8", 58}, {"e8", 59}, {"d8", 60}, {"c8", 61}, {"b8", 62}, {"a8", 63}
 };
 
-static const std::unordered_map<string, pair<Color, Pieces>> to_pieces = {
+static const std::unordered_map<string, PieceType> to_pieces = {
     {"P", {Color::White, Pieces::Pawn}},   {"p", {Color::Black, Pieces::Pawn}},
     {"R", {Color::White, Pieces::Rook}},   {"r", {Color::Black, Pieces::Rook}},
     {"N", {Color::White, Pieces::Knight}}, {"n", {Color::Black, Pieces::Knight}},
@@ -153,7 +152,7 @@ inline uint64_t generate_h_quintessence(int square_index, uint64_t mask, uint64_
 
 inline uint64_t generate_shape_translation(int square_index, ShapeMask::Mask mask) {
     RankFile rankfile_index = index_to_rankfile(square_index);
-    int radius = static_cast<int> (ceil(mask.width / 2.0));
+    int radius = static_cast<int> (ceil(mask.size.width / 2.0));
     int horizontal_index = (rankfile_index.rank - radius + 1);
     int vertical_index = ((rankfile_index.file - radius + 1) * 8);
     int left_index = (rankfile_index.rank + radius) * 8;

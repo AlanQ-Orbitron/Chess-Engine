@@ -11,6 +11,7 @@ enum class Color {Black, White, Blocker, Total};
 enum class MoveType {Attack, Movement, Total};
 enum class Pieces {Pawn, Rook, Knight, Bishop, Queen, King, Duck, Total};
 
+
 struct GameState {
     struct Bitboards {
         uint64_t color[int(Color::Total)];
@@ -31,9 +32,10 @@ struct GameState {
     } bitboards;
 
     struct States {
-        uint8_t castling;
         bool white_to_move = false;
         bool in_check = false;
+        Pieces royal = Pieces::King;
+        uint8_t castling;
         uint8_t EnPassant[int(Color::Total)];
         uint8_t halfmove_clock;
         uint16_t fullmove_number;
@@ -52,24 +54,18 @@ struct GameState {
 
         RuleSet(const RuleSet&) = delete;
         RuleSet& operator=(const RuleSet&) = delete;
-
         RuleSet() = default;
     } ruleSet;
 };
 
-
-struct ShapeGroup {
-    uint64_t attack_bitboard;
-    uint64_t movement_bitboard;
-};
-
-struct RankFile {
-    int rank;
-    int file;
-};
+struct PieceType  {Color color; Pieces piece;};
+struct ShapeGroup {uint64_t attack_bitboard, movement_bitboard;};
+struct RankFile   {int rank, file;};
+struct Size       {int width, height;};
+struct Position   {int x, y;};
 
 struct ShapeMask {
-    struct Mask {uint64_t mask; int width; int height;};
+    struct Mask  {uint64_t mask; Size size;};
     static constexpr Mask HORIZONTAL   {0x00000000000000FF, 8, 1};
     static constexpr Mask VERTICAL     {0x0101010101010101, 1, 1};
     static constexpr Mask DIAGONAL_L   {0x8040201008040201, 8, 8};
