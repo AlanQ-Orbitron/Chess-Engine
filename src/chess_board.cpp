@@ -1,9 +1,11 @@
 #include "chess_board.hpp"
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <godot_cpp/variant/utility_functions.hpp>
 #include "godot_cpp/variant/array.hpp"
 #include "godot_cpp/variant/string.hpp"
+#include "rules/pinning.hpp"
 #include <godot_cpp/core/class_db.hpp>
 
 using namespace std;
@@ -42,7 +44,7 @@ godot::Array ChessBoard::get_valid_moves() {
     godot::Array chessmove_list;
     for (int color = 0; color < 2; color++) {
         for (int piece = 0; piece < 6; piece++) {
-        chessmove_list.append_array(generate_attack_list(color, piece));
+        chessmove_list.append_array(generate_attack_list(Board.states.white_to_move, piece));
         }
     }
     return chessmove_list;
@@ -53,6 +55,8 @@ void ChessBoard::set_settings(godot::Dictionary settings) {
 }
 
 void ChessBoard::reset_settings() {
+    Board.ruleSet.modified_rules.push_back(std::make_unique<Pinning>());
+
     Board.ruleSet.enabled_piece_type.push_back(std::make_unique<King>());
     Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Pawn>());
     Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Rook>());

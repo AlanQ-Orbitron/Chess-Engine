@@ -6,6 +6,7 @@
 enum class Color {Black, White, Blocker, Total};
 enum class MoveType {Attack, Movement, Total};
 enum class Pieces {Pawn, Rook, Knight, Bishop, Queen, King, Duck, Total};
+enum class Directions {Top, Bottom, Left, Right, BottomLeft, BottomRight, TopLeft, TopRight};
 
 struct Rule;
 struct Piece;
@@ -19,7 +20,7 @@ struct Position   {int x, y;};
 struct ShapeMask  {
     struct Mask   {uint64_t mask; Size size;};
     static constexpr Mask HORIZONTAL   {0x00000000000000FF, 8, 1};
-    static constexpr Mask VERTICAL     {0x0101010101010101, 1, 1};
+    static constexpr Mask VERTICAL     {0x0101010101010101, 1, 8};
     static constexpr Mask DIAGONAL_L   {0x8040201008040201, 8, 8};
     static constexpr Mask DIAGONAL_R   {0x0102040810204080, 8, 8};
     static constexpr Mask KNIGHT_SHAPE {0x0000000A1100110A, 5, 5};
@@ -34,7 +35,7 @@ struct GameState {
         uint64_t pieces[int(Pieces::Total)];
         uint64_t moves_bitboard[int(Color::Total)][int(Pieces::Total)][64];
         uint64_t total_moves_bitboard[int(Color::Total)][int(MoveType::Total)];
-        uint64_t pins[int(Color::Total)];
+        uint64_t pins[int(Color::Total)]{};
         uint64_t all_pieces;
 
         inline void reset_board() {
@@ -50,7 +51,7 @@ struct GameState {
     } bitboards;
 
     struct States {
-        bool white_to_move = false;
+        bool white_to_move = true;
         bool in_check = false;
         Pieces royal = Pieces::King;
         uint8_t castling;

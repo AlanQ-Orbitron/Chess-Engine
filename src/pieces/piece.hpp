@@ -5,7 +5,7 @@
 struct Piece {
     mutable ShapeGroup shape_group{};
     mutable bool is_white{};
-    mutable uint64_t rays[8];
+    mutable uint64_t rays[8]{};
     mutable int square_index{};
     Pieces piece_type{};
 
@@ -17,7 +17,7 @@ struct Piece {
         this->is_white = is_white;
 
         while (full) {
-            int square_index = pop_least_significant(&full);
+            square_index = pop_least_significant(&full);
             shape_group.movement_bitboard = generate_movement_moves(square_index, board);
             shape_group.attack_bitboard = generate_attack_moves(square_index, board);
             

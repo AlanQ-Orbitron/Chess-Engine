@@ -137,20 +137,22 @@ inline uint64_t generate_h_quintessence(int square_index, uint64_t mask, uint64_
    return forward;
 }
 
-inline uint64_t generate_shape_translation(int square_index, ShapeMask::Mask mask) {
+inline uint64_t generate_shape_translation(int square_index, ShapeMask::Mask mask, Position position) {
     RankFile rankfile_index = index_to_rankfile(square_index);
-    int radius = static_cast<int> (ceil(mask.size.width / 2.0));
-    int horizontal_index = (rankfile_index.rank - radius + 1);
-    int vertical_index = ((rankfile_index.file - radius + 1) * 8);
-    int left_index = (rankfile_index.rank + radius) * 8;
-    int right_index = ((7 - rankfile_index.rank) + radius) * 8;
-    int top_index = (rankfile_index.file + radius) * 8;
-    int bottom_index = ((7 - rankfile_index.file) + radius) * 8;
+
+    int horizontal_index = (rankfile_index.rank - position.x);
+    int vertical_index = ((rankfile_index.file - position.y) << 3);
+    int left_index = (rankfile_index.rank - (position.x - mask.size.width)) << 3;
+    int right_index = ((7 - rankfile_index.rank) + position.x + 1) << 3;
+    int top_index = (rankfile_index.file - (position.y - mask.size.height)) << 3;
+    int bottom_index = ((7 - rankfile_index.file) + position.y + 1) << 3;
+
     uint64_t masked_shape = ccw90degrees(
         ( (left_index < 64) ? ULLONG_MAX << left_index : 0ULL) | 
-        ( (right_index < 64) ? ULLONG_MAX >> right_index : 0ULL) ) | 
-        ( (top_index < 64) ? ULLONG_MAX << top_index : 0ULL) | 
+        ( (right_index < 64) ? ULLONG_MAX >> right_index : 0ULL) ) |
+        ( (top_index < 64) ? ULLONG_MAX << top_index : 0ULL) |
         ( (bottom_index < 64) ? ULLONG_MAX >> bottom_index : 0ULL);
+
     mask.mask = (horizontal_index >= 0) ? mask.mask << horizontal_index : mask.mask >> abs(horizontal_index);
     mask.mask = (vertical_index >= 0) ? mask.mask << vertical_index : mask.mask >> abs(vertical_index);
     return mask.mask & ~(masked_shape);

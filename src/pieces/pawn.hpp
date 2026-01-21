@@ -26,7 +26,7 @@ struct Pawn : virtual Piece {
         ShapeMask::Mask attack_mask = (is_white) ? ShapeMask::WPAWN_SHAPE : ShapeMask::BPAWN_SHAPE;
 
         if ((is_white && rankfile_index.file < 7) || (!is_white && rankfile_index.file > 0)) {
-            return generate_shape_translation(square_index, attack_mask);
+            return generate_shape_translation(square_index, attack_mask, {1, 1});
         }
         return 0ULL;
     }
