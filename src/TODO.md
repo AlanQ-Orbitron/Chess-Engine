@@ -2,8 +2,8 @@
 
 ## Engine
 - [x] Bitboard refactor
-- [_] =Pinning=
-- [_] Castling
+- [X] Pinning
+- [_] =Castling=
 - [_] Promotion
 - [_] Indexing Pieces
 - [_] Dynamic Sizing
