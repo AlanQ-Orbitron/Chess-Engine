@@ -1,4 +1,5 @@
 #pragma once
+#include "board_utilities/chess_data.hpp"
 #include "piece.hpp"
 
 struct King : virtual Piece {

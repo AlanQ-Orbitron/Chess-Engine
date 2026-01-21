@@ -34,7 +34,7 @@ struct GameState {
         uint64_t color[int(Color::Total)];
         uint64_t pieces[int(Pieces::Total)];
         uint64_t moves_bitboard[int(Color::Total)][int(Pieces::Total)][64];
-        uint64_t total_moves_bitboard[int(Color::Total)][int(MoveType::Total)];
+        uint64_t total_moves_bitboard[int(Color::Total)][int(MoveType::Total)] {};
         uint64_t pins[int(Color::Total)]{};
         uint64_t all_pieces;
 

@@ -5,14 +5,14 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 #include "godot_cpp/variant/array.hpp"
 #include "godot_cpp/variant/string.hpp"
-#include "rules/pinning.hpp"
+#include "rules/royalty.hpp"
 #include <godot_cpp/core/class_db.hpp>
 
 using namespace std;
 
 void ChessBoard::generate_moves() {
-    Board.bitboards.all_pieces = Board.bitboards.color[int(Color::White)] | Board.bitboards.color[int(Color::Black)];
     Board.bitboards.reset_board();
+    Board.bitboards.all_pieces = Board.bitboards.color[int(Color::White)] | Board.bitboards.color[int(Color::Black)];
     
     for (const auto &PieceType : Board.ruleSet.enabled_piece_type) {
         PieceType->generate_moves(!Board.states.white_to_move, Board);
@@ -56,6 +56,7 @@ void ChessBoard::set_settings(godot::Dictionary settings) {
 
 void ChessBoard::reset_settings() {
     Board.ruleSet.modified_rules.push_back(std::make_unique<Pinning>());
+    Board.ruleSet.modified_rules.push_back(std::make_unique<Royalty>());
 
     Board.ruleSet.enabled_piece_type.push_back(std::make_unique<King>());
     Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Pawn>());

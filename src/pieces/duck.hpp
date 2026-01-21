@@ -1,4 +1,5 @@
 #pragma once
+#include "board_utilities/chess_data.hpp"
 #include "piece.hpp"
 
 struct Duck : Piece {
@@ -29,7 +30,7 @@ struct Duck : Piece {
 
             /*Pin Checker - TODO*/
 
-            board.bitboards.total_moves_bitboard[is_white][int(MoveType::Movement)] = shape_group.movement_bitboard;
+            board.bitboards.total_moves_bitboard[int(Color::Blocker)][int(MoveType::Movement)] = shape_group.movement_bitboard;
         }
     }
 };

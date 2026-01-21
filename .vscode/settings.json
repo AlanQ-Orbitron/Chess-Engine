@@ -94,5 +94,7 @@
     "setup.py":false
 },
   "files.eol": "\n",
-  "files.insertFinalNewline": true
+  "files.insertFinalNewline": true,
+  "window.zoomLevel": 0,
+  "editor.fontSize": 14
 }

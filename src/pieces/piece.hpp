@@ -1,5 +1,5 @@
 #pragma once
-#include "../rules/includer.hpp"
+#include "../rules/rule.hpp"
 #include "board_utilities/chess_data.hpp"
 
 struct Piece {
@@ -32,10 +32,10 @@ struct Piece {
 
             /*Pin Checker - TODO*/
 
-            board.bitboards.total_moves_bitboard[is_white][int(MoveType::Movement)] = shape_group.movement_bitboard;
-            board.bitboards.total_moves_bitboard[is_white][int(MoveType::Attack)] = shape_group.attack_bitboard;
+            board.bitboards.total_moves_bitboard[is_white][int(MoveType::Movement)] |= shape_group.movement_bitboard;
+            board.bitboards.total_moves_bitboard[is_white][int(MoveType::Attack)] |= shape_group.attack_bitboard;
 
-            board.bitboards.moves_bitboard[is_white][int(piece_type)][square_index] = shape_group.attack_bitboard | shape_group.movement_bitboard & (~board.bitboards.color[is_white]);
+            board.bitboards.moves_bitboard[is_white][int(piece_type)][square_index] = (shape_group.attack_bitboard | shape_group.movement_bitboard) & (~board.bitboards.color[is_white]);
         }
     }
 
