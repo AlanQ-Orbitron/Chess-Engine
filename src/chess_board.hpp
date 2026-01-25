@@ -23,7 +23,6 @@ class ChessBoard: public godot::Node{
         void set_settings(godot::Dictionary settings);
         void reset_settings();
     protected:
-        GameState Board;
         static void _bind_methods();
         void generate_moves();
     private:

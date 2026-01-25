@@ -3,39 +3,62 @@
 #include "board_utilities/chess_data.hpp"
 
 struct Piece {
+    const Pieces piece_type;
+    const std::vector<Pieces> promotions;
     mutable ShapeGroup shape_group{};
     mutable bool is_white{};
-    mutable uint64_t rays[8]{};
     mutable int square_index{};
-    Pieces piece_type{};
+    mutable uint64_t rays[8]{};
 
-    virtual uint64_t generate_movement_moves(int square_index, GameState &board) const = 0;
-    virtual uint64_t generate_attack_moves(int square_index, GameState &board) const {return shape_group.movement_bitboard;}
+    virtual uint64_t generate_movement_moves() const = 0;
+    virtual uint64_t generate_attack_moves() const {return shape_group.bitboard[int(MoveType::Movement)];}
+    virtual void write_moves(const MoveType &move_type) const {
+        uint64_t full = shape_group.bitboard[int(move_type)];
+        while (full) {
+            uint8_t to_square_index = pop_least_significant(&full);
+            Board.move_list[is_white].add(
+                Move{
+                    static_cast<uint8_t>(square_index),
+                    to_square_index,
+                    piece_type,
+                    Board.states.piece_at_index[to_square_index].piece,
+                    promotions,
+                    move_type,
+                }
+            );
+        }
+    }
 
-    virtual void generate_moves(bool is_white, GameState &board) const {
-        uint64_t full = board.bitboards.color[is_white] & board.bitboards.pieces[int(piece_type)];
+
+    explicit Piece(Pieces type, std::vector<Pieces> promotion_list) : piece_type(type), promotions(promotion_list) {}
+    explicit Piece(Pieces type) : piece_type(type), promotions({}) {}
+
+    virtual void generate_moves(bool is_white) const {
+        uint64_t full = Board.bitboards.color[is_white] & Board.bitboards.pieces[int(piece_type)];
         this->is_white = is_white;
 
         while (full) {
             square_index = pop_least_significant(&full);
-            shape_group.movement_bitboard = generate_movement_moves(square_index, board);
-            shape_group.attack_bitboard = generate_attack_moves(square_index, board);
+            shape_group.bitboard[int(MoveType::Movement)] = generate_movement_moves();
+            shape_group.bitboard[int(MoveType::Attack)] = generate_attack_moves();
             
             /* Check Checker - TODO */
 
-            for (const auto &Rule : board.ruleSet.modified_rules) {Rule->pre_proccessing(*this, is_white, board, shape_group);}
+            for (const auto &Rule : Board.ruleSet.modified_rules) {Rule->pre_proccessing(*this, is_white, shape_group);}
 
-            shape_group.movement_bitboard &= ~board.bitboards.all_pieces;
-            shape_group.attack_bitboard &= board.bitboards.color[!is_white];
+            shape_group.bitboard[int(MoveType::Movement)] &= ~Board.bitboards.total_pieces;
+            shape_group.bitboard[int(MoveType::Attack)] &= Board.bitboards.color[!is_white];
 
-            for (const auto &Rule : board.ruleSet.modified_rules) {Rule->post_proccessing(*this, is_white, board, shape_group);}
+            for (const auto &Rule : Board.ruleSet.modified_rules) {Rule->post_proccessing(*this, is_white, shape_group);}
 
             /*Pin Checker - TODO*/
 
-            board.bitboards.total_moves_bitboard[is_white][int(MoveType::Movement)] |= shape_group.movement_bitboard;
-            board.bitboards.total_moves_bitboard[is_white][int(MoveType::Attack)] |= shape_group.attack_bitboard;
+            Board.bitboards.total_moves_bitboard[is_white][int(MoveType::Movement)] |= shape_group.bitboard[int(MoveType::Movement)];
+            Board.bitboards.total_moves_bitboard[is_white][int(MoveType::Attack)] |= shape_group.bitboard[int(MoveType::Attack)];
 
-            board.bitboards.moves_bitboard[is_white][int(piece_type)][square_index] = (shape_group.attack_bitboard | shape_group.movement_bitboard) & (~board.bitboards.color[is_white]);
+            // board.bitboards.moves_bitboard[is_white][int(piece_type)][square_index] = (shape_group.attack_bitboard | shape_group.movement_bitboard) & (~board.bitboards.color[is_white]);
+            write_moves(MoveType::Movement);
+            write_moves(MoveType::Attack);
         }
     }
 

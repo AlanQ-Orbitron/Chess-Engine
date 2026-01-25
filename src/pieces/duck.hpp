@@ -3,34 +3,36 @@
 #include "piece.hpp"
 
 struct Duck : Piece {
-    Duck() {piece_type = Pieces::Duck;}
-    uint64_t generate_movement_moves(int square_index, GameState &board) const override {
-        return ~board.bitboards.all_pieces;
+    Duck(Pieces type) : Piece(type) {}
+
+    uint64_t generate_movement_moves() const override {
+        return ~Board.bitboards.total_pieces;
     }
-    uint64_t generate_attack_moves(int square_index, GameState &board) const override {
+    
+    uint64_t generate_attack_moves() const override {
         return 0ULL;
     }
 
-    void generate_moves(bool is_white, GameState &board) const override {
-        uint64_t full = board.bitboards.color[int(Color::Blocker)] & board.bitboards.pieces[int(piece_type)];
+    void generate_moves(bool is_white) const override {
+        uint64_t full = Board.bitboards.color[int(Color::Blocker)] & Board.bitboards.pieces[int(piece_type)];
         
         this->is_white = false;
         while (full) {
             int square_index = pop_least_significant(&full);
-            generate_movement_moves(square_index, board);
-            generate_attack_moves(square_index, board);
+            generate_movement_moves();
+            generate_attack_moves();
             
             /* Check Checker - TODO */
 
-            for (const auto &Rule : board.ruleSet.modified_rules) {Rule->pre_proccessing(*this, is_white, board, shape_group);}
+            for (const auto &Rule : Board.ruleSet.modified_rules) {Rule->pre_proccessing(*this, is_white, shape_group);}
 
-            shape_group.movement_bitboard &= ~board.bitboards.all_pieces;
+            shape_group.bitboard[int(MoveType::Movement)] &= ~Board.bitboards.total_pieces;
 
-            for (const auto &Rule : board.ruleSet.modified_rules) {Rule->post_proccessing(*this, is_white, board, shape_group);}
+            for (const auto &Rule : Board.ruleSet.modified_rules) {Rule->post_proccessing(*this, is_white, shape_group);}
 
             /*Pin Checker - TODO*/
 
-            board.bitboards.total_moves_bitboard[int(Color::Blocker)][int(MoveType::Movement)] = shape_group.movement_bitboard;
+            Board.bitboards.total_moves_bitboard[int(Color::Blocker)][int(MoveType::Movement)] = shape_group.bitboard[int(MoveType::Movement)];
         }
     }
 };

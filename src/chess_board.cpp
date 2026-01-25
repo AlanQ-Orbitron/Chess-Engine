@@ -3,23 +3,25 @@
 #include <memory>
 #include <string>
 #include <godot_cpp/variant/utility_functions.hpp>
+#include "board_utilities/chess_data.hpp"
 #include "godot_cpp/variant/array.hpp"
 #include "godot_cpp/variant/string.hpp"
+#include "pieces/queen.hpp"
 #include "rules/royalty.hpp"
 #include <godot_cpp/core/class_db.hpp>
 
 using namespace std;
 
 void ChessBoard::generate_moves() {
-    Board.bitboards.reset_board();
-    Board.bitboards.all_pieces = Board.bitboards.color[int(Color::White)] | Board.bitboards.color[int(Color::Black)];
+    Board.reset_board();
+    Board.bitboards.update_total_pieces();
     
     for (const auto &PieceType : Board.ruleSet.enabled_piece_type) {
-        PieceType->generate_moves(!Board.states.white_to_move, Board);
+        PieceType->generate_moves(!Board.states.white_to_move);
     }
 
     for (const auto &PieceType : Board.ruleSet.enabled_piece_type) {
-        PieceType->generate_moves(Board.states.white_to_move, Board);
+        PieceType->generate_moves(Board.states.white_to_move);
     }
 }
 
@@ -27,15 +29,9 @@ void ChessBoard::generate_moves() {
 godot::Array ChessBoard::get_valid_moves() {
     auto generate_attack_list = [this](int color, int piece) {
         godot::Array singular_pieces_attack_list;
-        uint64_t bitboard = Board.bitboards.color[color] & Board.bitboards.pieces[piece];
-        int square_index;
-        int square_attack_index;
-        while (bitboard) {
-            square_index = pop_least_significant(&bitboard);
-            uint64_t attack_bitboard = Board.bitboards.moves_bitboard[color][piece][square_index];
-            while (attack_bitboard) {
-                square_attack_index = pop_least_significant(&attack_bitboard);
-                singular_pieces_attack_list.append(godot::String(to_UCI[square_index]) + godot::String(to_UCI[square_attack_index]));
+        for (const std::optional<Move> (&moves)[64] : Board.move_list[Board.states.white_to_move].moves) {
+            for (const std::optional<Move> move : moves) {
+                if (move.has_value()) singular_pieces_attack_list.push_back(godot::String(to_UCI[move->from]) + godot::String(to_UCI[move->to]));
             }
         }
         return singular_pieces_attack_list;
@@ -58,18 +54,18 @@ void ChessBoard::reset_settings() {
     Board.ruleSet.modified_rules.push_back(std::make_unique<Pinning>());
     Board.ruleSet.modified_rules.push_back(std::make_unique<Royalty>());
 
-    Board.ruleSet.enabled_piece_type.push_back(std::make_unique<King>());
-    Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Pawn>());
-    Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Rook>());
-    Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Knight>());
-    Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Bishop>());
-    Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Queen>());
-    Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Duck>());
+    Board.ruleSet.enabled_piece_type.push_back(std::make_unique<King>   (Pieces::King));
+    Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Pawn>   (Pieces::Pawn, std::vector<Pieces> {Pieces::Bishop, Pieces::Rook, Pieces::Queen}));
+    Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Rook>   (Pieces::Rook));
+    Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Knight> (Pieces::Knight));
+    Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Bishop> (Pieces::Bishop));
+    Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Queen>  (Pieces::Queen));
+    Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Duck>   (Pieces::Duck));
 }
 
 void ChessBoard::generate_board(godot::String board) {
-    Board.bitboards.reset_board();
-    Board.bitboards.reset_piece();
+    Board.reset_board();
+    Board.reset_start();
     reset_settings();
     fen_to_bit(board, Board);
 
@@ -86,31 +82,46 @@ bool ChessBoard::move_to(godot::String str_move) {
     string move = string(str_move.utf8().get_data());
     int from = to_index.at(move.substr(1, 2));
     int to = to_index.at(move.substr(3, 2));
-    PieceType type = to_pieces.at(move.substr(0, 1));
+    // PieceType type = to_pieces.at(move.substr(0, 1));
 
     if (get_valid_moves().has(str_move.substr(1, 2) + str_move.substr(3, 2))) {
         Board.states.white_to_move = !Board.states.white_to_move;
-        if (move.length() == 6) {
-            PieceType promotion_type = to_pieces.at(move.substr(move.length() - 1, 1));
-        }
+        // if (move.length() == 6) {
+        //     PieceType promotion_type = to_pieces.at(move.substr(move.length() - 1, 1));
+        // }
         uint64_t from_square = 1ULL << from;
         uint64_t to_square = 1ULL << to;
-
-        for (int piece = 0; piece < int(Pieces::Total); piece++) {
-            Board.bitboards.color[int(Color::White)] &= ~from_square;
-            Board.bitboards.color[int(Color::Black)] &= ~from_square;
-            Board.bitboards.pieces[piece] &= ~from_square;
+        PieceType from_type = Board.states.piece_at_index[from];
+        PieceType to_type = Board.states.piece_at_index[to];
             
-            Board.bitboards.color[int(Color::White)] &= ~to_square;
-            Board.bitboards.color[int(Color::Black)] &= ~to_square;
-            Board.bitboards.pieces[piece] &= ~to_square;
-        }
-        Board.bitboards.color[int(type.color)] |= to_square;
-        Board.bitboards.pieces[int(type.piece)] |= to_square;
+        Board.bitboards.color[int(to_type.color)] &= ~to_square;
+        Board.bitboards.pieces[int(to_type.piece)] &= ~to_square;
+
+        Board.bitboards.color[int(from_type.color)] &= ~from_square;
+        Board.bitboards.pieces[int(from_type.piece)] &= ~from_square;
+        Board.bitboards.color[int(from_type.color)] |= to_square;
+        Board.bitboards.pieces[int(from_type.piece)] |= to_square;
+
+        Board.states.piece_at_index[to] = Board.states.piece_at_index[from];
+        Board.states.piece_at_index[from] = {Color::None, Pieces::None};
+
+
+        // for (int piece = 0; piece < int(Pieces::Total); piece++) {
+        //     Board.bitboards.color[int(Color::White)] &= ~from_square;
+        //     Board.bitboards.color[int(Color::Black)] &= ~from_square;
+        //     Board.bitboards.pieces[piece] &= ~from_square;
+            
+        //     Board.bitboards.color[int(Color::White)] &= ~to_square;
+        //     Board.bitboards.color[int(Color::Black)] &= ~to_square;
+        //     Board.bitboards.pieces[piece] &= ~to_square;
+        // }
+        // Board.bitboards.color[int(type.color)] |= to_square;
+        // Board.bitboards.pieces[int(type.piece)] |= to_square;
 
         generate_moves();
         return true;
     }
+    
     return false;
 }
 

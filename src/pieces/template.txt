@@ -2,13 +2,32 @@
 #include "piece.hpp"
 
 struct Blank : virtual Piece {
-    Blank() {piece_type = Pieces::Blank;}
-    uint64_t generate_movement_moves(int square_index, GameState &board) const override {
+public:
+    Blank(GameState& Board, Pieces type) : Piece(Board, type) {}
+    uint64_t generate_movement_moves() const override {
         RankFile rankfile_index = index_to_rankfile(square_index);
         return movement_bitboard;
     }
-    uint64_t generate_attack_moves(int square_index, GameState &board) const override {
+    uint64_t generate_attack_moves() const override {
         RankFile rankfile_index = index_to_rankfile(square_index);
         return attack_bitboard;
+    }
+
+    
+    void write_moves() {
+        uint64_t full = shape_group.attack_bitboard;
+        while (full) {
+            uint8_t to_square_index = pop_least_significant(&full);
+            board.move_list.add(
+                Move{
+                    .from = static_cast<uint8_t>(square_index),
+                    .to = to_square_index,
+                    .piece = Pieces::None,
+                    .captured = Pieces::None,
+                    .promotion = Pieces::None,
+                    .type = MoveType::None,
+                }
+            );
+        }
     }
 };

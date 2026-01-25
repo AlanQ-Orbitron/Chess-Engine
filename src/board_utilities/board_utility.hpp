@@ -50,15 +50,40 @@ inline uint64_t pop_least_significant(uint64_t* bitboard) {
     return static_cast<int>(popped_index);
 }
 
+inline std::string expandFEN(const std::string& fen) {
+    std::string result;
+
+    for (char c : fen) {
+        if (c == ' ') break; // stop at the end of the board part
+        if (c == '/') continue; // skip row separators
+        if (isdigit(c)) {
+            int empty = c - '0';
+            result.append(empty, '-'); // fill empty squares with '.'
+        } else {
+            result += c; // copy piece
+        }
+    }
+
+    return result;
+}
+
 inline void fen_to_bit(godot::String string_board, GameState &board) {
     
-    auto process_position = [](godot::String state, char32_t start, char32_t end) {
-        godot::String result;
+    auto process_position = [&board](std::string state) {
+        state = expandFEN(state);
         for (int i = 0; i < state.length(); i++) {
-            char32_t c = state[i];
-            result += (c >= start && c <= end) ? "1" : (c >= U'0' && c <= U'9') ? godot::String("0").repeat(c - U'0') : "0";
+            std::string single_string = std::string(1, state[i]);
+            if (single_string == "-") {
+                board.states.piece_at_index[i] = {Color::None, Pieces::None};
+                continue;
+            }
+            PieceType piece_type = to_pieces.at(single_string);
+
+            board.bitboards.color[int(piece_type.color)] |= 1ULL << i;
+            board.bitboards.pieces[int(piece_type.piece)] |= 1ULL << i;
+            board.states.piece_at_index[i] = piece_type;
+            // result += (c >= start && c <= end) ? "1" : (c >= U'0' && c <= U'9') ? godot::String("0").repeat(c - U'0') : "0";
         }
-        return result;
     };
 
     auto convert_to_binary = [](godot::String string_binary) {
@@ -67,19 +92,22 @@ inline void fen_to_bit(godot::String string_board, GameState &board) {
 
     // Only works with standard FEN chess notation
     godot::Array states = string_board.split(" ");
-    godot::String position = godot::String(states[0]).replace("/", "");
-    board.states.white_to_move = (states[1] == godot::String("w"));
+    godot::String position = godot::String(states[0]).replace("/", "").reverse();
 
-    board.bitboards.color[int(Color::White)] = convert_to_binary(process_position(position, U'B', U'R'));
-    board.bitboards.color[int(Color::Black)] = convert_to_binary(process_position(position, U'b', U'r'));
-    position = position.to_lower();
+    process_position(position.utf8().get_data());
+    board.states.white_to_move = true;
 
-    board.bitboards.pieces[int(Pieces::Pawn)]   = convert_to_binary(process_position(position, U'p', U'p'));
-    board.bitboards.pieces[int(Pieces::Rook)]   = convert_to_binary(process_position(position, U'r', U'r'));
-    board.bitboards.pieces[int(Pieces::Knight)] = convert_to_binary(process_position(position, U'n', U'n'));
-    board.bitboards.pieces[int(Pieces::Bishop)] = convert_to_binary(process_position(position, U'b', U'b'));
-    board.bitboards.pieces[int(Pieces::Queen)]  = convert_to_binary(process_position(position, U'q', U'q'));
-    board.bitboards.pieces[int(Pieces::King)]   = convert_to_binary(process_position(position, U'k', U'k'));
+
+    // board.bitboards.color[int(Color::White)] = convert_to_binary(process_position(position, U'B', U'R'));
+    // board.bitboards.color[int(Color::Black)] = convert_to_binary(process_position(position, U'b', U'r'));
+    // position = position.to_lower();
+
+    // board.bitboards.pieces[int(Pieces::Pawn)]   = convert_to_binary(process_position(position, U'p', U'p'));
+    // board.bitboards.pieces[int(Pieces::Rook)]   = convert_to_binary(process_position(position, U'r', U'r'));
+    // board.bitboards.pieces[int(Pieces::Knight)] = convert_to_binary(process_position(position, U'n', U'n'));
+    // board.bitboards.pieces[int(Pieces::Bishop)] = convert_to_binary(process_position(position, U'b', U'b'));
+    // board.bitboards.pieces[int(Pieces::Queen)]  = convert_to_binary(process_position(position, U'q', U'q'));
+    // board.bitboards.pieces[int(Pieces::King)]   = convert_to_binary(process_position(position, U'k', U'k'));
 }
 
 // Transformation

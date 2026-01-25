@@ -54,7 +54,7 @@ shader_parameter/secondary = Vector3(0, 0, 0)
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tipki"]
 shader = ExtResource("7_o6xl0")
 shader_parameter/offset = Vector2(0, 0)
-shader_parameter/chromatic_abbreation_strength = 3.0
+shader_parameter/chromatic_aberration_scale = 0.5
 shader_parameter/screen_size = Vector2(0, 0)
 
 [node name="RootNode" type="CanvasLayer"]
