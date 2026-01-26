@@ -41,24 +41,27 @@ struct Piece {
             square_index = pop_least_significant(&full);
             shape_group.bitboard[int(MoveType::Movement)] = generate_movement_moves();
             shape_group.bitboard[int(MoveType::Attack)] = generate_attack_moves();
-            
+            shape_group.bitboard[int(MoveType::Castle)] = {};
             /* Check Checker - TODO */
 
-            for (const auto &Rule : Board.ruleSet.modified_rules) {Rule->pre_proccessing(*this, is_white, shape_group);}
+            for (const auto &Rule : Board.ruleSet.modified_rules) {Rule->pre_proccessing(*this);}
+            
+            Board.bitboards.total_moves_bitboard[is_white][int(MoveType::Movement)] |= shape_group.bitboard[int(MoveType::Movement)];
+            Board.bitboards.total_moves_bitboard[is_white][int(MoveType::Attack)] |= shape_group.bitboard[int(MoveType::Attack)];
 
             shape_group.bitboard[int(MoveType::Movement)] &= ~Board.bitboards.total_pieces;
+            shape_group.bitboard[int(MoveType::Castle)] &= ~Board.bitboards.total_pieces;
             shape_group.bitboard[int(MoveType::Attack)] &= Board.bitboards.color[!is_white];
 
-            for (const auto &Rule : Board.ruleSet.modified_rules) {Rule->post_proccessing(*this, is_white, shape_group);}
+            for (const auto &Rule : Board.ruleSet.modified_rules) {Rule->post_proccessing(*this);}
 
             /*Pin Checker - TODO*/
 
-            Board.bitboards.total_moves_bitboard[is_white][int(MoveType::Movement)] |= shape_group.bitboard[int(MoveType::Movement)];
-            Board.bitboards.total_moves_bitboard[is_white][int(MoveType::Attack)] |= shape_group.bitboard[int(MoveType::Attack)];
 
             // board.bitboards.moves_bitboard[is_white][int(piece_type)][square_index] = (shape_group.attack_bitboard | shape_group.movement_bitboard) & (~board.bitboards.color[is_white]);
             write_moves(MoveType::Movement);
             write_moves(MoveType::Attack);
+            write_moves(MoveType::Castle);
         }
     }
 

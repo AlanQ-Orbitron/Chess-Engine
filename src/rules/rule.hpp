@@ -4,8 +4,8 @@
 struct GameState;
 
 struct Rule {
-    virtual void pre_proccessing(const Piece &piece, const bool &is_white, ShapeGroup &mask_group) const {};
-    virtual void post_proccessing(const Piece &piece, const bool &is_white, ShapeGroup &mask_group) const {};
+    virtual void pre_proccessing(const Piece &piece) const {};
+    virtual void post_proccessing(const Piece &piece) const {};
 
     virtual ~Rule() = default;
 };

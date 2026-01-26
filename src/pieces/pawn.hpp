@@ -25,10 +25,10 @@ struct Pawn : virtual Piece {
     
     uint64_t generate_attack_moves() const override {
         RankFile rankfile_index = index_to_rankfile(square_index);
-        ShapeMask::Mask attack_mask = (is_white) ? ShapeMask::WPAWN_SHAPE : ShapeMask::BPAWN_SHAPE;
+        Position position = (is_white) ? Position{1, 0} : Position{1, 2};
 
         if ((is_white && rankfile_index.file < 7) || (!is_white && rankfile_index.file > 0)) {
-            return generate_shape_translation(square_index, attack_mask, {1, 1});
+            return generate_shape_translation(square_index, ShapeMask::PAWN_SHAPE, position);
         }
         return 0ULL;
     }

@@ -7,7 +7,7 @@
 
 enum class Color : uint8_t {Black, White, Blocker, None, Total};
 enum class Pieces : uint8_t{Pawn, Rook, Knight, Bishop, Queen, King, Duck, None, Total};
-enum class MoveType : uint8_t {Quiet, Capture, Castle, EnPassant, Promotion, PromotionCapture, DoublePawnPush, Attack, Movement, None, Total};
+enum class MoveType : uint8_t {Castle, EnPassantCapture, Attack, Movement, None, Total};
 enum class Directions : uint8_t {Top, Bottom, Left, Right, BottomLeft, BottomRight, TopLeft, TopRight};
 
 struct Rule;
@@ -27,8 +27,8 @@ struct ShapeMask  {
     static constexpr Mask DIAGONAL_R   {0x0102040810204080, 8, 8};
     static constexpr Mask KNIGHT_SHAPE {0x0000000A1100110A, 5, 5};
     static constexpr Mask KING_SHAPE   {0x0000000000070707, 3, 3};
-    static constexpr Mask BPAWN_SHAPE  {0x0000000000000005, 3, 3};
-    static constexpr Mask WPAWN_SHAPE  {0x0000000000050000, 3, 3};
+    static constexpr Mask PAWN_SHAPE   {0x0000000000000500, 3, 3};
+    static constexpr Mask CASTLING     {0x0000000000000011, 5, 1};
 };
 
 struct Move {

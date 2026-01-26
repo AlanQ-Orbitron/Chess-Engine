@@ -1,12 +1,12 @@
 #include "chess_board.hpp"
-#include <cstdint>
 #include <memory>
-#include <string>
 #include <godot_cpp/variant/utility_functions.hpp>
+#include "board_utilities/board_utility.hpp"
 #include "board_utilities/chess_data.hpp"
 #include "godot_cpp/variant/array.hpp"
 #include "godot_cpp/variant/string.hpp"
 #include "pieces/queen.hpp"
+#include "rules/castling.hpp"
 #include "rules/royalty.hpp"
 #include <godot_cpp/core/class_db.hpp>
 
@@ -53,6 +53,7 @@ void ChessBoard::set_settings(godot::Dictionary settings) {
 void ChessBoard::reset_settings() {
     Board.ruleSet.modified_rules.push_back(std::make_unique<Pinning>());
     Board.ruleSet.modified_rules.push_back(std::make_unique<Royalty>());
+    Board.ruleSet.modified_rules.push_back(std::make_unique<Castling>());
 
     Board.ruleSet.enabled_piece_type.push_back(std::make_unique<King>   (Pieces::King));
     Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Pawn>   (Pieces::Pawn, std::vector<Pieces> {Pieces::Bishop, Pieces::Rook, Pieces::Queen}));
@@ -74,6 +75,18 @@ void ChessBoard::generate_board(godot::String board) {
     generate_moves();
 }
 
+void ChessBoard::castling_checker(const Move &move_state) {
+    if (move_state.piece == Pieces::King) {
+        godot::UtilityFunctions::print("ran");
+        Board.states.castling[Board.states.white_to_move] |= 1ULL << 4;
+    }
+    if (move_state.piece == Pieces::Rook) {
+        RankFile rankfile = index_to_rankfile(move_state.from);
+        if (rankfile.rank == 0) Board.states.castling[Board.states.white_to_move] |= 0x07;
+        if (rankfile.rank == 7) Board.states.castling[Board.states.white_to_move] |= 0xE0;
+    }
+}
+
 bool ChessBoard::move_to(godot::String str_move) {
     if (str_move.length() < 5) {
         godot::UtilityFunctions::printerr("Incorrect String Length");
@@ -85,15 +98,15 @@ bool ChessBoard::move_to(godot::String str_move) {
     // PieceType type = to_pieces.at(move.substr(0, 1));
 
     if (get_valid_moves().has(str_move.substr(1, 2) + str_move.substr(3, 2))) {
-        Board.states.white_to_move = !Board.states.white_to_move;
-        // if (move.length() == 6) {
-        //     PieceType promotion_type = to_pieces.at(move.substr(move.length() - 1, 1));
-        // }
+        
         uint64_t from_square = 1ULL << from;
         uint64_t to_square = 1ULL << to;
         PieceType from_type = Board.states.piece_at_index[from];
         PieceType to_type = Board.states.piece_at_index[to];
             
+        std::optional<Move> move_state = Board.move_list[Board.states.white_to_move].moves[from][to];
+        if (move_state.has_value()) castling_checker(move_state.value());
+
         Board.bitboards.color[int(to_type.color)] &= ~to_square;
         Board.bitboards.pieces[int(to_type.piece)] &= ~to_square;
 
@@ -104,20 +117,8 @@ bool ChessBoard::move_to(godot::String str_move) {
 
         Board.states.piece_at_index[to] = Board.states.piece_at_index[from];
         Board.states.piece_at_index[from] = {Color::None, Pieces::None};
-
-
-        // for (int piece = 0; piece < int(Pieces::Total); piece++) {
-        //     Board.bitboards.color[int(Color::White)] &= ~from_square;
-        //     Board.bitboards.color[int(Color::Black)] &= ~from_square;
-        //     Board.bitboards.pieces[piece] &= ~from_square;
-            
-        //     Board.bitboards.color[int(Color::White)] &= ~to_square;
-        //     Board.bitboards.color[int(Color::Black)] &= ~to_square;
-        //     Board.bitboards.pieces[piece] &= ~to_square;
-        // }
-        // Board.bitboards.color[int(type.color)] |= to_square;
-        // Board.bitboards.pieces[int(type.piece)] |= to_square;
-
+        
+        Board.states.white_to_move = !Board.states.white_to_move;
         generate_moves();
         return true;
     }

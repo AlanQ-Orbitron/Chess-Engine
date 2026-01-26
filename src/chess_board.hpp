@@ -25,6 +25,7 @@ class ChessBoard: public godot::Node{
     protected:
         static void _bind_methods();
         void generate_moves();
+        void castling_checker(const Move &move_state);
     private:
 
         
