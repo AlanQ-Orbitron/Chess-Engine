@@ -9,6 +9,7 @@
 #include "rules/castling.hpp"
 #include "rules/royalty.hpp"
 #include <godot_cpp/core/class_db.hpp>
+#include <vector>
 
 using namespace std;
 
@@ -31,7 +32,15 @@ godot::Array ChessBoard::get_valid_moves() {
         godot::Array singular_pieces_attack_list;
         for (const std::optional<Move> (&moves)[64] : Board.move_list[Board.states.white_to_move].moves) {
             for (const std::optional<Move> move : moves) {
-                if (move.has_value()) singular_pieces_attack_list.push_back(godot::String(to_UCI[move->from]) + godot::String(to_UCI[move->to]));
+                if (move.has_value()) {
+                    if (move->promotion.empty()) {
+                        singular_pieces_attack_list.push_back(godot::String(to_UCI[move->from]) + godot::String(to_UCI[move->to]));
+                    } else {
+                        for (Pieces promation : move->promotion) {
+                            
+                        }
+                    }
+                }
             }
         }
         return singular_pieces_attack_list;
@@ -95,7 +104,6 @@ bool ChessBoard::move_to(godot::String str_move) {
     string move = string(str_move.utf8().get_data());
     int from = to_index.at(move.substr(1, 2));
     int to = to_index.at(move.substr(3, 2));
-    // PieceType type = to_pieces.at(move.substr(0, 1));
 
     if (get_valid_moves().has(str_move.substr(1, 2) + str_move.substr(3, 2))) {
         
@@ -105,8 +113,13 @@ bool ChessBoard::move_to(godot::String str_move) {
         PieceType to_type = Board.states.piece_at_index[to];
             
         std::optional<Move> move_state = Board.move_list[Board.states.white_to_move].moves[from][to];
-        if (move_state.has_value()) castling_checker(move_state.value());
-
+        if (move_state.has_value()) {
+            castling_checker(move_state.value());
+            std::vector<Pieces> promotions = move_state.value().promotion;
+            if (std::find(promotions.begin(), promotions.end(), Pieces::None) != promotions.end()) {}
+        }
+            
+    
         Board.bitboards.color[int(to_type.color)] &= ~to_square;
         Board.bitboards.pieces[int(to_type.piece)] &= ~to_square;
 
