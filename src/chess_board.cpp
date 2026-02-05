@@ -10,6 +10,8 @@
 #include "rules/royalty.hpp"
 #include <godot_cpp/core/class_db.hpp>
 #include <vector>
+#include <algorithm>
+
 
 using namespace std;
 

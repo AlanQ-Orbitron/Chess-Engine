@@ -44,11 +44,12 @@ static const std::unordered_map<std::string, PieceType> to_pieces = {
 static constexpr RankFile index_to_rankfile(int square_index) {return {square_index % 8, square_index / 8};}; // Rank, File
 
 inline uint64_t pop_least_significant(uint64_t* bitboard) {
-    unsigned long popped_index;
-    _BitScanForward64(&popped_index, *bitboard);
-    *bitboard &= *bitboard -1;
-    return static_cast<int>(popped_index);
+    uint64_t b = *bitboard;
+    uint64_t index = __builtin_ctzll(b);
+    *bitboard &= b - 1;
+    return index;
 }
+
 
 inline std::string expandFEN(const std::string& fen) {
     std::string result;
@@ -147,7 +148,7 @@ inline constexpr uint64_t mirrorHorizontal (uint64_t x) {
    return x;
 }
 
-inline uint64_t flipVertical(uint64_t x) {return _byteswap_uint64(x);} /*Stollen from https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating then translated to c++*/
+inline uint64_t flipVertical(uint64_t x) {return __builtin_bswap64(x);} /*Stollen from https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating then translated to c++*/
 inline uint64_t cw90degrees(uint64_t bitboard) {return(flipDiag(bitboard));}
 inline uint64_t ccw90degrees(uint64_t bitboard) {return flipVertical(flipDiag(bitboard));}
 
