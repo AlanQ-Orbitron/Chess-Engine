@@ -35,13 +35,13 @@ godot::Array ChessBoard::get_valid_moves() {
         for (const std::optional<Move> (&moves)[64] : Board.move_list[Board.states.white_to_move].moves) {
             for (const std::optional<Move> move : moves) {
                 if (move.has_value()) {
-                    if (move->promotion.empty()) {
-                        singular_pieces_attack_list.push_back(godot::String(to_UCI[move->from]) + godot::String(to_UCI[move->to]));
-                    } else {
-                        for (Pieces promation : move->promotion) {
+                    // if (move->promotion.empty()) {
+                    singular_pieces_attack_list.push_back(godot::String(to_UCI[move->from]) + godot::String(to_UCI[move->to]));
+                    // } else {
+                        // for (Pieces promation : move->promotion) {
                             
-                        }
-                    }
+                        // }
+                    // }
                 }
             }
         }
@@ -54,6 +54,7 @@ godot::Array ChessBoard::get_valid_moves() {
         chessmove_list.append_array(generate_attack_list(Board.states.white_to_move, piece));
         }
     }
+    godot::UtilityFunctions::print(chessmove_list);
     return chessmove_list;
 }
 
