@@ -46,17 +46,16 @@ static constexpr RankFile index_to_rankfile(int square_index) {return {square_in
 #if defined(_MSC_VER)
 #include <intrin.h>
 inline uint64_t pop_least_significant(uint64_t* bitboard) {
-    unsigned long index;
-    _BitScanForward64(&index, *bitboard);
+    unsigned long popped_index;
+    _BitScanForward64(&popped_index, *bitboard);
     *bitboard &= *bitboard - 1;
-    return index;
+    return static_cast<int>(popped_index);
 }
 #else
 inline uint64_t pop_least_significant(uint64_t* bitboard) {
-    uint64_t b = *bitboard;
-    uint64_t index = __builtin_ctzll(b);
-    *bitboard &= b - 1;
-    return index;
+    uint64_t popped_index = __builtin_ctzll(*bitboard);
+    *bitboard &= *bitboard - 1;
+    return popped_index;
 }
 #endif
 
