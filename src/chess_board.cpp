@@ -29,6 +29,7 @@ void ChessBoard::generate_moves() {
 
 
 godot::Dictionary ChessBoard::get_valid_moves() {
+    
     auto generate_attack_list = [this]() {
         godot::Dictionary singular_pieces_attack_list;
         godot::String addon;
