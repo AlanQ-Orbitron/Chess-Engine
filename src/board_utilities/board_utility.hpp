@@ -44,19 +44,32 @@ static const std::unordered_map<std::string, PieceType> to_pieces = {
 static constexpr RankFile index_to_rankfile(int square_index) {return {square_index % 8, square_index / 8};}; // Rank, File
 
 #if defined(_MSC_VER)
-#include <intrin.h>
-inline uint64_t pop_least_significant(uint64_t* bitboard) {
-    unsigned long popped_index;
-    _BitScanForward64(&popped_index, *bitboard);
-    *bitboard &= *bitboard - 1;
-    return static_cast<int>(popped_index);
-}
+    #include <intrin.h>
+
+    inline uint64_t pop_least_significant(uint64_t* bitboard) {
+        unsigned long popped_index;
+
+    #if defined(_M_X64)
+        _BitScanForward64(&popped_index, *bitboard);
+        
+    #else
+        if (_BitScanForward(&popped_index, static_cast<unsigned long>(*bitboard))) {}
+        else {
+            _BitScanForward(&popped_index, static_cast<unsigned long>(*bitboard >> 32));
+            popped_index += 32;
+        }
+
+    #endif
+        *bitboard &= *bitboard - 1;
+        return popped_index;
+    }
+
 #else
-inline uint64_t pop_least_significant(uint64_t* bitboard) {
-    uint64_t popped_index = __builtin_ctzll(*bitboard);
-    *bitboard &= *bitboard - 1;
-    return popped_index;
-}
+    inline uint64_t pop_least_significant(uint64_t* bitboard) {
+        uint64_t popped_index = __builtin_ctzll(*bitboard);
+        *bitboard &= *bitboard - 1;
+        return popped_index;
+    }
 #endif
 
 
