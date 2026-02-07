@@ -7,5 +7,4 @@
 #include "bishop.hpp"
 #include "queen.hpp"
 #include "king.hpp"
-#include "duck.hpp"
 // IWYU pragma: end_exports

@@ -6,8 +6,8 @@
 #include <vector>
 
 enum class Color : uint8_t {Black, White, Blocker, None, Total};
-enum class Pieces : uint8_t{Pawn, Rook, Knight, Bishop, Queen, King, Duck, None, Total};
-enum class MoveType : uint8_t {Attack, Movement, Castle, EnPassantCapture, None, Total};
+enum class Pieces : uint8_t{Pawn, Rook, Knight, Bishop, Queen, King, PassPawn, Duck, None, Total};
+enum class MoveType : uint8_t {Attack, Movement, Castle, PassPawn, EnPassant, None, Total};
 enum class Directions : uint8_t {Top, Bottom, Left, Right, BottomLeft, BottomRight, TopLeft, TopRight};
 
 struct Rule;
@@ -44,8 +44,6 @@ struct MoveList {
     std::optional<Move> moves[64][64] {};
 
     void add(const Move& m) {moves[m.from][m.to] = m;}
-
-
 };
 
 struct GameState {
@@ -56,6 +54,7 @@ struct GameState {
         // uint64_t moves_bitboard[int(Color::Total)][int(Pieces::Total)][64];
         uint64_t total_moves_bitboard[int(Color::Total)][int(MoveType::Total)] {};
         uint64_t pins[int(Color::Total)]{};
+        uint64_t pass_pawns[int(Color::Total)]{};
 
         inline void update_total_pieces() {
             total_pieces = color[int(Color::White)] | color[int(Color::Black)];
@@ -97,6 +96,7 @@ struct GameState {
         }
     };
     inline void reset_start(){
+        memset(bitboards.pass_pawns, 0, sizeof(bitboards.pass_pawns));
         memset(bitboards.color, 0, sizeof(bitboards.color));
         memset(bitboards.pieces, 0, sizeof(bitboards.pieces));
         memset(states.castling, 0, sizeof(states.castling));

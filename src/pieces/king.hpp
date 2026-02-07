@@ -1,18 +1,19 @@
 #pragma once
+#include "board_utilities/chess_data.hpp"
 #include "piece.hpp"
 
 struct King : virtual Piece {
     King(Pieces type) : Piece(type) {}
 
-    uint64_t generate_movement_moves() const {
-        return generate_shape_translation(square_index, ShapeMask::KING_SHAPE, {1, 1});
+    uint64_t generate_movement_moves() const override {
+        // return generate_shape_translation(square_index, ShapeMask::KING_SHAPE, {1, 1});
+        return Board.bitboards.pass_pawns[is_white];
     }
 
-    ShapeGroup generate_shape_group() const override {
-        uint64_t bitboard[int(MoveType::Total)]{};
-        bitboard[int(MoveType::Movement)] = generate_movement_moves();
-        bitboard[int(MoveType::Attack)] = bitboard[int(MoveType::Movement)];
-
-        return ShapeGroup {*bitboard};
+    virtual void moves_out() const override {
+        write_moves(MoveType::Movement);
+        write_moves(MoveType::Attack);
+        write_moves(MoveType::Castle);
     }
+
 };

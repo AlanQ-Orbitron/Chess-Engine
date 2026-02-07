@@ -1,6 +1,5 @@
 #pragma once
 #include "../pieces/piece.hpp"
-#include "board_utilities/chess_data.hpp"
 
 struct Castling : virtual Rule {
 	void pre_proccessing(const Piece &piece) const override {
