@@ -9,7 +9,7 @@ struct Bishop : virtual Piece {
 
     Bishop(Pieces type) : Piece(type) {}
 	
-    uint64_t generate_movement_moves() const override {
+    uint64_t generate_movement_moves() const {
 		uint64_t merged_movements = 0ULL;
 		for (int i = 0; i < 4; i++) {
 			uint64_t raw_ray = generate_shape_translation(square_index, *shapes[i >> 1], offsets[i]);
@@ -18,5 +18,13 @@ struct Bishop : virtual Piece {
 			rays[direction[i]] = generate_h_quintessence(square_index, raw_ray, Board.bitboards.total_pieces & ~movement) | 1ULL << square_index;
 		}
         return merged_movements;
+    }
+
+	ShapeGroup generate_shape_group() const override {
+        uint64_t bitboard[int(MoveType::Total)]{};
+        bitboard[int(MoveType::Movement)] = generate_movement_moves();
+        bitboard[int(MoveType::Attack)] = bitboard[int(MoveType::Movement)];
+
+        return ShapeGroup {*bitboard};
     }
 };

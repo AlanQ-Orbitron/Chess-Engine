@@ -5,12 +5,15 @@
 struct Duck : Piece {
     Duck(Pieces type) : Piece(type) {}
 
-    uint64_t generate_movement_moves() const override {
+    uint64_t generate_movement_moves() const {
         return ~Board.bitboards.total_pieces;
     }
-    
-    uint64_t generate_attack_moves() const override {
-        return 0ULL;
+
+    ShapeGroup generate_shape_group() const override {
+        uint64_t bitboard[int(MoveType::Total)]{};
+        bitboard[int(MoveType::Movement)] = generate_movement_moves();
+
+        return ShapeGroup {*bitboard};
     }
 
     void generate_moves(bool is_white) const override {
@@ -18,9 +21,8 @@ struct Duck : Piece {
         
         this->is_white = false;
         while (full) {
-            int square_index = pop_least_significant(&full);
-            generate_movement_moves();
-            generate_attack_moves();
+            square_index = pop_least_significant(&full);
+            shape_group = generate_shape_group();
             
             /* Check Checker - TODO */
 

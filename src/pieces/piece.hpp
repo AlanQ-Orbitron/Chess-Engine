@@ -10,8 +10,7 @@ struct Piece {
     mutable int square_index{};
     mutable uint64_t rays[8]{};
 
-    virtual uint64_t generate_movement_moves() const = 0;
-    virtual uint64_t generate_attack_moves() const {return shape_group.bitboard[int(MoveType::Movement)];}
+    virtual ShapeGroup generate_shape_group() const = 0;
     virtual void write_moves(const MoveType &move_type) const {
         uint64_t full = shape_group.bitboard[int(move_type)];
         while (full) {
@@ -29,7 +28,6 @@ struct Piece {
         }
     }
 
-
     explicit Piece(Pieces type, std::vector<Pieces> promotion_list) : piece_type(type), promotions(promotion_list) {}
     explicit Piece(Pieces type) : piece_type(type), promotions({}) {}
 
@@ -39,9 +37,7 @@ struct Piece {
 
         while (full) {
             square_index = pop_least_significant(&full);
-            shape_group.bitboard[int(MoveType::Movement)] = generate_movement_moves();
-            shape_group.bitboard[int(MoveType::Attack)] = generate_attack_moves();
-            shape_group.bitboard[int(MoveType::Castle)] = {};
+            shape_group = generate_shape_group();
             /* Check Checker - TODO */
 
             for (const auto &Rule : Board.ruleSet.modified_rules) {Rule->pre_proccessing(*this);}

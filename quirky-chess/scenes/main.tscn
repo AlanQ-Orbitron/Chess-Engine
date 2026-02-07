@@ -222,7 +222,6 @@ visible = false
 layout_mode = 1
 
 [node name="Filter" type="ColorRect" parent="."]
-visible = false
 z_index = 999
 material = SubResource("ShaderMaterial_tipki")
 anchors_preset = 15
