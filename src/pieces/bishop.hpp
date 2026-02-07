@@ -19,4 +19,5 @@ struct Bishop : virtual Piece {
 		}
         return merged_movements;
     }
+
 };

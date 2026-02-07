@@ -19,7 +19,7 @@ class ChessBoard: public godot::Node{
     public:
         void generate_board(godot::String board);
         bool move_to(godot::String move);
-        godot::Array get_valid_moves();
+        godot::Dictionary get_valid_moves();
         void set_settings(godot::Dictionary settings);
         void reset_settings();
     protected:

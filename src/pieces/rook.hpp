@@ -18,4 +18,5 @@ struct Rook : virtual Piece {
 		}
         return merged_movements;
     }
+
 };

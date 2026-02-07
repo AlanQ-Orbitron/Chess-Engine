@@ -50,14 +50,14 @@ func getPiece(pos: Vector2) -> Variant: # Dictionary
 func setPiece(piece: Dictionary) -> void:
 	set_cell(invertY(piece.get("position")), 2, piece.get("pieceType"))
 
-func setHighlights(piece: Dictionary, moves: Array) -> void:
+func setHighlights(piece: Dictionary, moves: Dictionary) -> void:
 	clear()
 	var piecePos: String = UCISink(piece.get("position"))
 	for move: String in moves:
 		if move[0] == piecePos[0] && move[1] == piecePos[1]:
 			set_cell(filerankSink(move.substr(2,2)), 1, Vector2i(0, 0))
 
-func moveTo(piece: Dictionary, pos: Vector2, legalMoves: Array) -> bool:
+func moveTo(piece: Dictionary, pos: Vector2, legalMoves: Dictionary) -> bool:
 	var coords: Vector2i = invertY(localized(pos))
 	var move: String = UCISink(piece.get("position")) + UCISink(coords)
 	var pieces_type: String
@@ -66,6 +66,9 @@ func moveTo(piece: Dictionary, pos: Vector2, legalMoves: Array) -> bool:
 		var sanityCheck: bool = board.move_to(pieces_type + move)
 		if !sanityCheck:
 			printerr("Move To Error")
+		if legalMoves.has(move):
+			if legalMoves.get(move) == "E":
+				clearCell(Vector2i(coords.x, coords.y + (1 if (pieces_type != pieces_type.to_upper()) else -1)))
 		clearCell(piece.get("position"))
 		piece.set("position", coords)
 		setPiece(piece)

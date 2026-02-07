@@ -96,5 +96,6 @@
   "files.eol": "\n",
   "files.insertFinalNewline": true,
   "window.zoomLevel": 0,
-  "editor.fontSize": 14
+  "editor.fontSize": 14,
+  "C_Cpp.errorSquiggles": "disabled"
 }

@@ -11,12 +11,12 @@ struct Pawn : virtual Piece {
         if (is_white) {
             if (rankfile_index.file < 7) {
                 movement_bitboard = (1ULL << (square_index + 8)) & ~Board.bitboards.total_pieces;
-                movement_bitboard |= (rankfile_index.file == 1) ? movement_bitboard << 8 : 0ULL;
+                // movement_bitboard |= (rankfile_index.file == 1) ? movement_bitboard << 8 : 0ULL;
             }
         } else {
             if (rankfile_index.file > 0) {
-            movement_bitboard = (1ULL << (square_index - 8)) & ~Board.bitboards.total_pieces;
-            movement_bitboard |= (rankfile_index.file == 6) ? movement_bitboard >> 8 : 0ULL;
+                movement_bitboard = (1ULL << (square_index - 8)) & ~Board.bitboards.total_pieces;
+                // movement_bitboard |= (rankfile_index.file == 6) ? movement_bitboard >> 8 : 0ULL;
             }
         }
 
@@ -25,11 +25,19 @@ struct Pawn : virtual Piece {
     
     uint64_t generate_attack_moves() const override {
         RankFile rankfile_index = index_to_rankfile(square_index);
-        Position position = (is_white) ? Position{1, 0} : Position{1, 2};
+        Position position_offset = (is_white) ? Position{1, 0} : Position{1, 2};
 
         if ((is_white && rankfile_index.file < 7) || (!is_white && rankfile_index.file > 0)) {
-            return generate_shape_translation(square_index, ShapeMask::PAWN_SHAPE, position);
+            return generate_shape_translation(square_index, ShapeMask::PAWN_SHAPE, position_offset);
         }
         return 0ULL;
     }
+
+    void moves_out() const override {
+        write_moves(MoveType::Movement);
+        write_moves(MoveType::Attack);
+        write_moves(MoveType::PassPawn);
+        write_moves(MoveType::EnPassant);
+    }
+
 };

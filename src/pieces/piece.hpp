@@ -12,6 +12,10 @@ struct Piece {
 
     virtual uint64_t generate_movement_moves() const = 0;
     virtual uint64_t generate_attack_moves() const {return shape_group.bitboard[int(MoveType::Movement)];}
+    virtual void moves_out() const {
+        write_moves(MoveType::Movement);
+        write_moves(MoveType::Attack);
+    }
     virtual void write_moves(const MoveType &move_type) const {
         uint64_t full = shape_group.bitboard[int(move_type)];
         while (full) {
@@ -29,7 +33,6 @@ struct Piece {
         }
     }
 
-
     explicit Piece(Pieces type, std::vector<Pieces> promotion_list) : piece_type(type), promotions(promotion_list) {}
     explicit Piece(Pieces type) : piece_type(type), promotions({}) {}
 
@@ -38,10 +41,10 @@ struct Piece {
         this->is_white = is_white;
 
         while (full) {
+            shape_group = {};
             square_index = pop_least_significant(&full);
             shape_group.bitboard[int(MoveType::Movement)] = generate_movement_moves();
             shape_group.bitboard[int(MoveType::Attack)] = generate_attack_moves();
-            shape_group.bitboard[int(MoveType::Castle)] = {};
             /* Check Checker - TODO */
 
             for (const auto &Rule : Board.ruleSet.modified_rules) {Rule->pre_proccessing(*this);}
@@ -55,14 +58,9 @@ struct Piece {
 
             for (const auto &Rule : Board.ruleSet.modified_rules) {Rule->post_proccessing(*this);}
 
-            /*Pin Checker - TODO*/
-
-
-            // board.bitboards.moves_bitboard[is_white][int(piece_type)][square_index] = (shape_group.attack_bitboard | shape_group.movement_bitboard) & (~board.bitboards.color[is_white]);
-            write_moves(MoveType::Movement);
-            write_moves(MoveType::Attack);
-            write_moves(MoveType::Castle);
+            moves_out();
         }
+
     }
 
     
