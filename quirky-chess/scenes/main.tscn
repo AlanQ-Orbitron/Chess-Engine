@@ -1,29 +1,26 @@
-[gd_scene load_steps=30 format=3 uid="uid://btl6lgl3p3hnb"]
+[gd_scene load_steps=28 format=3 uid="uid://btl6lgl3p3hnb"]
 
 [ext_resource type="PackedScene" uid="uid://dfuutgfglne6l" path="res://scenes/chess board/chess_engine.tscn" id="1_o5qli"]
 [ext_resource type="Shader" uid="uid://bl8at6hs52fbt" path="res://scenes/screen effects/background.gdshader" id="1_tefeu"]
 [ext_resource type="AudioStream" uid="uid://b3s52qk1fcns3" path="res://assets/sound/songtracks/pixabay/relaxing-piano-201831.mp3" id="2_0ld40"]
-[ext_resource type="PackedScene" uid="uid://dehp62kpmrkn0" path="res://scenes/GUI/menu.tscn" id="2_0wfyh"]
-[ext_resource type="Script" uid="uid://d4ne1cy72wfyc" path="res://scenes/background.gd" id="3_85g3d"]
+[ext_resource type="Script" uid="uid://d4ne1cy72wfyc" path="res://scenes/screen effects/background.gd" id="3_85g3d"]
 [ext_resource type="AudioStream" uid="uid://c2fgu88ooenr0" path="res://assets/sound/songtracks/pixabay/relaxing-piano-music-248868.mp3" id="3_gqmmt"]
 [ext_resource type="Script" uid="uid://brfpnvumvxgsl" path="res://scenes/global.gd" id="3_sugp2"]
 [ext_resource type="AudioStream" uid="uid://b3hwj6x83qocp" path="res://assets/sound/songtracks/pixabay/relaxing-piano-music-272714.mp3" id="4_yc10j"]
 [ext_resource type="AudioStream" uid="uid://ba4rciq67pikk" path="res://assets/sound/songtracks/pixabay/relaxing-piano-music-345082.mp3" id="5_jscy8"]
-[ext_resource type="Texture2D" uid="uid://db1nf3fwms8o6" path="res://assets/Quirky-Chess.png" id="5_o6xl0"]
-[ext_resource type="Texture2D" uid="uid://o8bcgxyke87e" path="res://assets/background.png" id="5_tbgi4"]
+[ext_resource type="Texture2D" uid="uid://db1nf3fwms8o6" path="res://assets/gui/Quirky-Chess.png" id="5_o6xl0"]
+[ext_resource type="Texture2D" uid="uid://o8bcgxyke87e" path="res://assets/gui/background.png" id="5_tbgi4"]
 [ext_resource type="AudioStream" uid="uid://dgq6qdmwd1yl4" path="res://assets/sound/songtracks/pixabay/soft-memories-relaxing-piano-music-351872.mp3" id="6_pm3ni"]
 [ext_resource type="Shader" uid="uid://d0u2hq3xriosw" path="res://scenes/screen effects/render_effect.gdshader" id="7_o6xl0"]
 [ext_resource type="AudioStream" uid="uid://djdw6gyrmfg6p" path="res://assets/sound/songtracks/pixabay/soft-piano-428014.mp3" id="7_y6deb"]
 [ext_resource type="AudioStream" uid="uid://br1ew7ib05ev8" path="res://assets/sound/songtracks/pixabay/soft-piano-background-444129.mp3" id="8_og1vs"]
-[ext_resource type="Script" uid="uid://dstjabpkxellc" path="res://scenes/filter.gd" id="8_tipki"]
+[ext_resource type="Script" uid="uid://dstjabpkxellc" path="res://assets/gui/filter.gd" id="8_tipki"]
 [ext_resource type="AudioStream" uid="uid://0iubbpbpvwya" path="res://assets/sound/songtracks/pixabay/soft-piano-music-312509.mp3" id="9_2wyq8"]
-[ext_resource type="Script" uid="uid://dnc4cwby0rv56" path="res://scenes/audio_stream_player.gd" id="10_0ld40"]
-[ext_resource type="PackedScene" uid="uid://d0vgs15bd210w" path="res://scenes/GUI/menu_buttons.tscn" id="16_gqmmt"]
-[ext_resource type="PackedScene" uid="uid://bybfcdskk431k" path="res://scenes/GUI/side-menus/settings_menu.tscn" id="17_yc10j"]
-[ext_resource type="Script" uid="uid://kducscnrbdof" path="res://scenes/GUI/menu.gd" id="18_jscy8"]
-[ext_resource type="Script" uid="uid://olicmho72epv" path="res://scenes/ignore-mouse.gd" id="19_yc10j"]
-[ext_resource type="PackedScene" uid="uid://w6vke6y5iuqg" path="res://scenes/GUI/side-menus/ruleset_menu.tscn" id="21_pm3ni"]
-[ext_resource type="Script" uid="uid://c3u2u3q11xhan" path="res://scenes/point_light_2d.gd" id="24_y6deb"]
+[ext_resource type="Script" uid="uid://dnc4cwby0rv56" path="res://assets/sound/audio_stream_player.gd" id="10_0ld40"]
+[ext_resource type="PackedScene" uid="uid://dubn1ywa4g8av" path="res://scenes/UI/menus/sidebar.tscn" id="15_pm3ni"]
+[ext_resource type="Script" uid="uid://blwdsdab5l3n8" path="res://scenes/UI/menus/chess_menu.gd" id="19_pm3ni"]
+[ext_resource type="Script" uid="uid://olicmho72epv" path="res://assets/gui/ignore-mouse.gd" id="19_yc10j"]
+[ext_resource type="Script" uid="uid://c3u2u3q11xhan" path="res://scenes/chess board/point_light_2d.gd" id="24_y6deb"]
 
 [sub_resource type="Gradient" id="Gradient_og1vs"]
 offsets = PackedFloat32Array(0, 0.62343097)
@@ -51,6 +48,14 @@ shader = ExtResource("1_tefeu")
 shader_parameter/primary = Vector3(0, 0, 0)
 shader_parameter/secondary = Vector3(0, 0, 0)
 
+[sub_resource type="GDScript" id="GDScript_gqmmt"]
+script/source = "extends Control
+
+func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
+"
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tipki"]
 shader = ExtResource("7_o6xl0")
 shader_parameter/offset = Vector2(0, 0)
@@ -61,7 +66,6 @@ shader_parameter/screen_size = Vector2(0, 0)
 
 [node name="PointLight2D" type="PointLight2D" parent="."]
 z_index = 9
-position = Vector2(395, 195)
 color = Color(0.38195983, 0.53895986, 0.999991, 1)
 energy = 0.08
 range_layer_min = 1
@@ -100,63 +104,23 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 0
 
-[node name="Menu" parent="HBoxContainer" instance=ExtResource("2_0wfyh")]
-custom_minimum_size = Vector2(150, 0)
+[node name="sidebar" parent="HBoxContainer" instance=ExtResource("15_pm3ni")]
 layout_mode = 2
-script = ExtResource("19_yc10j")
 
-[node name="ColorRect" parent="HBoxContainer/Menu" index="0"]
-z_index = -2
-color = Color(0.2627451, 0.3019608, 0.41568628, 1)
-
-[node name="MarginContainer" parent="HBoxContainer/Menu" index="1"]
-layout_mode = 1
+[node name="SideMenu" type="Control" parent="."]
+unique_name_in_owner = true
+z_index = 1
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 0.0
-offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_top = 16
-
-[node name="VBoxContainer" parent="HBoxContainer/Menu/MarginContainer" index="0"]
-theme_override_constants/separation = 4
-
-[node name="Story Mode" parent="HBoxContainer/Menu/MarginContainer/VBoxContainer" index="0" instance=ExtResource("16_gqmmt")]
-layout_mode = 2
-text = "Story Mode
-(WIP)"
-
-[node name="Multiplayer" parent="HBoxContainer/Menu/MarginContainer/VBoxContainer" index="1" instance=ExtResource("16_gqmmt")]
-layout_mode = 2
-text = "Multiplayer
-(WIP)"
-
-[node name="Computer" parent="HBoxContainer/Menu/MarginContainer/VBoxContainer" index="2" node_paths=PackedStringArray("sideMenu") instance=ExtResource("16_gqmmt")]
-layout_mode = 2
-text = "Computer"
-sideMenu = NodePath("../../../../SideMenu/Chess Menu")
-
-[node name="Rules" parent="HBoxContainer/Menu/MarginContainer/VBoxContainer" index="3" node_paths=PackedStringArray("sideMenu") instance=ExtResource("16_gqmmt")]
-layout_mode = 2
-text = "Rules
-"
-sideMenu = NodePath("../../../../SideMenu/Ruleset Menu")
-
-[node name="Music" parent="HBoxContainer/Menu/MarginContainer/VBoxContainer" index="4" node_paths=PackedStringArray("sideMenu") instance=ExtResource("16_gqmmt")]
-layout_mode = 2
-text = "Music"
-sideMenu = NodePath("../../../../SideMenu/Settings")
-
-[node name="SideMenu" type="Control" parent="HBoxContainer"]
-unique_name_in_owner = true
-z_index = 1
-layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("19_yc10j")
 
-[node name="Quirky-Chess Logo" type="TextureRect" parent="HBoxContainer/SideMenu"]
+[node name="Quirky-Chess Logo" type="TextureRect" parent="SideMenu"]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -171,23 +135,21 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("5_o6xl0")
 stretch_mode = 4
-script = ExtResource("18_jscy8")
+script = SubResource("GDScript_gqmmt")
 
-[node name="Settings" parent="HBoxContainer/SideMenu" instance=ExtResource("17_yc10j")]
+[node name="Chess Menu" type="Control" parent="SideMenu" node_paths=PackedStringArray("controller")]
 visible = false
-custom_minimum_size = Vector2(0, 0)
 layout_mode = 1
-
-[node name="Chess Menu" type="Control" parent="HBoxContainer/SideMenu"]
-visible = false
-anchors_preset = 0
-offset_left = 4.0
-offset_right = 1002.0
-offset_bottom = 648.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_horizontal = 3
-script = ExtResource("18_jscy8")
+script = ExtResource("19_pm3ni")
+controller = NodePath("../../HBoxContainer/sidebar/MarginContainer/HBoxContainer/Menu/VBoxContainer/Play/Menu/MarginContainer/GridContainer/Computer")
 
-[node name="Board" type="Control" parent="HBoxContainer/SideMenu/Chess Menu"]
+[node name="Board" type="Control" parent="SideMenu/Chess Menu"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -197,7 +159,7 @@ anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ColorRect" type="ColorRect" parent="HBoxContainer/SideMenu/Chess Menu/Board"]
+[node name="ColorRect" type="ColorRect" parent="SideMenu/Chess Menu/Board"]
 z_index = -2
 layout_mode = 1
 anchors_preset = 8
@@ -213,13 +175,9 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.6389, 0.68157417, 0.7965896, 1)
 
-[node name="Chess-Engine" parent="HBoxContainer/SideMenu/Chess Menu/Board" instance=ExtResource("1_o5qli")]
+[node name="Chess-Engine" parent="SideMenu/Chess Menu/Board" instance=ExtResource("1_o5qli")]
 z_index = -1
 scale = Vector2(1.05, 1.05)
-
-[node name="Ruleset Menu" parent="HBoxContainer/SideMenu" instance=ExtResource("21_pm3ni")]
-visible = false
-layout_mode = 1
 
 [node name="Filter" type="ColorRect" parent="."]
 z_index = 999
@@ -233,4 +191,6 @@ script = ExtResource("8_tipki")
 
 [connection signal="mouse_entered" from="Filter" to="." method="_on_filter_mouse_entered"]
 
-[editable path="HBoxContainer/Menu"]
+[editable path="HBoxContainer/sidebar"]
+[editable path="HBoxContainer/sidebar/MarginContainer/HBoxContainer/Menu/VBoxContainer/Setting"]
+[editable path="HBoxContainer/sidebar/MarginContainer/HBoxContainer/Menu/VBoxContainer/Play"]

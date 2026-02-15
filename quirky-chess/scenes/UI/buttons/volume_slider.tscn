@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3 uid="uid://6pd1xa7wnl5d"]
+
+[ext_resource type="Script" uid="uid://cvma2xlo0ut8u" path="res://scenes/UI/buttons/volume_slider.gd" id="1_l6fmk"]
+
+[node name="VolumeSlider" type="VSlider"]
+z_index = 2
+custom_minimum_size = Vector2(0, 100)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -8.0
+offset_top = -50.0
+offset_right = 8.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 1.0
+step = 0.01
+value = 1.0
+script = ExtResource("1_l6fmk")
+
+[connection signal="value_changed" from="." to="." method="_on_value_changed"]

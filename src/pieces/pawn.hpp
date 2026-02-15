@@ -1,4 +1,5 @@
 #pragma once
+#include "board_utilities/chess_data.hpp"
 #include "piece.hpp"
 
 struct Pawn : virtual Piece {
@@ -38,6 +39,7 @@ struct Pawn : virtual Piece {
         write_moves(MoveType::Attack);
         write_moves(MoveType::PassPawn);
         write_moves(MoveType::EnPassant);
+        write_moves(MoveType::Promotion);
     }
 
 };

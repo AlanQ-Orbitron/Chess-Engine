@@ -5,4 +5,5 @@
 #include "pinning.hpp"
 #include "royalty.hpp"
 #include "castling.hpp"
+#include "promotion.hpp"
 // IWYU pragma: end_exports

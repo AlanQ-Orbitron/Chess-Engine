@@ -53,6 +53,7 @@ struct Piece {
             Board.bitboards.total_moves_bitboard[is_white][int(MoveType::Attack)] |= shape_group.bitboard[int(MoveType::Attack)];
 
             shape_group.bitboard[int(MoveType::Movement)] &= ~Board.bitboards.total_pieces;
+            shape_group.bitboard[int(MoveType::Promotion)] &= ~Board.bitboards.total_pieces;
             shape_group.bitboard[int(MoveType::Castle)] &= ~Board.bitboards.total_pieces;
             shape_group.bitboard[int(MoveType::Attack)] &= Board.bitboards.color[!is_white];
 

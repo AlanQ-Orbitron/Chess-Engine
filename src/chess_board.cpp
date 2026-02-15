@@ -3,16 +3,14 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 #include "board_utilities/board_utility.hpp"
 #include "board_utilities/chess_data.hpp"
+#include "godot_cpp/classes/global_constants.hpp"
 #include "godot_cpp/variant/array.hpp"
 #include "godot_cpp/variant/dictionary.hpp"
 #include "godot_cpp/variant/string.hpp"
+#include "godot_cpp/variant/variant.hpp"
 #include "rules/enpassant.hpp"
 #include <godot_cpp/core/class_db.hpp>
 #include <vector>
-#include <algorithm>
-
-
-using namespace std;
 
 void ChessBoard::generate_moves() {
     Board.reset_board();
@@ -27,12 +25,11 @@ void ChessBoard::generate_moves() {
     }
 }
 
-
 godot::Dictionary ChessBoard::get_valid_moves() {
     
     auto generate_attack_list = [this]() {
         godot::Dictionary singular_pieces_attack_list;
-        godot::String addon;
+        godot::Variant addon;
         for (const std::optional<Move> (&moves)[64] : Board.move_list[Board.states.white_to_move].moves) {
             for (const std::optional<Move> move : moves) {
                 if (move.has_value()) {
@@ -40,17 +37,21 @@ godot::Dictionary ChessBoard::get_valid_moves() {
                         case MoveType::EnPassant:
                             addon = "E";
                             break;
+                        case MoveType::Promotion:{
+                            if (move->promotion.empty()) break;
+                            godot::Array list_promotion;
+                            for (Pieces promotions : move->promotion) {
+                                godot::String s = godot::String::chr(to_char.at(PieceType {static_cast<Color>(Board.states.white_to_move), promotions}));
+                                list_promotion.append(s);
+                            }
+                            addon = list_promotion;
+                            break;
+                        }
                         default:
                             break;
                     }
-                    
-                    // if (move->promotion.empty()) {
-                        singular_pieces_attack_list.set(godot::String(to_UCI[move->from]) + godot::String(to_UCI[move->to]), addon);
-                    // } else {
-                    //     for (Pieces promation : move->promotion) {
-                                
-                    //         }
-                    //     }
+                    singular_pieces_attack_list.set(godot::String(to_UCI[move->from]) + godot::String(to_UCI[move->to]), addon);
+
                 }
             }
         }
@@ -58,11 +59,13 @@ godot::Dictionary ChessBoard::get_valid_moves() {
     };
     return generate_attack_list();
 }
+
 void ChessBoard::set_settings(godot::Dictionary settings) {
 
 }
 
 void ChessBoard::reset_settings() {
+    Board.ruleSet.modified_rules.push_back(std::make_unique<Promotion>());
     Board.ruleSet.modified_rules.push_back(std::make_unique<PassPawn>());
     Board.ruleSet.modified_rules.push_back(std::make_unique<EnPassant>());
     Board.ruleSet.modified_rules.push_back(std::make_unique<Pinning>());
@@ -70,7 +73,7 @@ void ChessBoard::reset_settings() {
     Board.ruleSet.modified_rules.push_back(std::make_unique<Castling>());
 
     Board.ruleSet.enabled_piece_type.push_back(std::make_unique<King>   (Pieces::King));
-    Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Pawn>   (Pieces::Pawn, std::vector<Pieces> {Pieces::Bishop, Pieces::Rook, Pieces::Queen}));
+    Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Pawn>   (Pieces::Pawn, std::vector<Pieces> {Pieces::Knight, Pieces::Bishop, Pieces::Rook, Pieces::Queen}));
     Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Rook>   (Pieces::Rook));
     Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Knight> (Pieces::Knight));
     Board.ruleSet.enabled_piece_type.push_back(std::make_unique<Bishop> (Pieces::Bishop));
@@ -100,15 +103,15 @@ void ChessBoard::castling_checker(const Move &move_state) {
 }
 
 bool ChessBoard::move_to(godot::String str_move) {
-    if (str_move.length() < 5) {
+    if (str_move.length() < 4) {
         godot::UtilityFunctions::printerr("Incorrect String Length");
         return false;
     }
     string move = string(str_move.utf8().get_data());
-    int from = to_index.at(move.substr(1, 2));
-    int to = to_index.at(move.substr(3, 2));
+    int from = to_index.at(move.substr(0, 2));
+    int to = to_index.at(move.substr(2, 2));
 
-    if (get_valid_moves().has(str_move.substr(1, 2) + str_move.substr(3, 2))) {
+    if (get_valid_moves().has(str_move.substr(0, 2) + str_move.substr(2, 2))) {
         
         uint64_t from_square = 1ULL << from;
         uint64_t to_square = 1ULL << to;
@@ -118,9 +121,9 @@ bool ChessBoard::move_to(godot::String str_move) {
         std::optional<Move> move_state = Board.move_list[Board.states.white_to_move].moves[from][to];
         castling_checker(move_state.value());
         std::vector<Pieces> promotions = move_state.value().promotion;
-        if (std::find(promotions.begin(), promotions.end(), Pieces::None) != promotions.end()) {}
 
         Board.bitboards.pass_pawns[int(from_type.color)] = {};
+        // if (move_state.value().type == MoveType::Promotion) from_type = 
         if (move_state.value().type == MoveType::PassPawn) Board.bitboards.pass_pawns[int(from_type.color)] = (Board.states.white_to_move) ? to_square >> 8 : to_square << 8;
         if (move_state.value().type == MoveType::EnPassant) {
             Board.bitboards.color[int(to_type.color)] &= ~((Board.states.white_to_move) ? to_square >> 8 : to_square << 8);
@@ -146,6 +149,17 @@ bool ChessBoard::move_to(godot::String str_move) {
 }
 
 void ChessBoard::_bind_methods() {
+    godot::ClassDB::add_property(
+        get_class_static(),
+        godot::PropertyInfo(
+            godot::Variant::INT,
+            "enum_holder",
+            godot::PROPERTY_HINT_ENUM,
+            "RED,GREEN,BLUE"
+        ),"set_my_color","get_my_color"
+    );
+
+
     godot::ClassDB::bind_method(godot::D_METHOD("generate_board", "board"), &ChessBoard::generate_board);
     godot::ClassDB::bind_method(godot::D_METHOD("generate_moves"), &ChessBoard::generate_moves);
     godot::ClassDB::bind_method(godot::D_METHOD("get_valid_moves"), &ChessBoard::get_valid_moves);

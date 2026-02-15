@@ -2,15 +2,15 @@ extends Node2D
 
 @onready var highlights: TileMapLayer = $Highlights
 @onready var chess_pieces: TileMapLayer = $ChessPieces
-@onready var pieces: AnimatedSprite2D = $Pieces
+@onready var pieces: Control = $Pieces
 @onready var chess_sounds: AudioStreamPlayer = $ChessSounds
-
+@onready var promotion_menu: Control = $"Promotion Menu"
 
 var board: ChessBoard = ChessBoard.new()
 var selectedPiece: Variant # Dictionary
 var isSelectedNull: bool
 
-enum pieaces {
+enum piece {
 	Pawn,
 	Rook,
 	Knight,
@@ -37,22 +37,23 @@ func _input(event: InputEvent) -> void:
 			chess_pieces.set_cell(selectedPiece.get("position"), -1)
 			match selectedPiece.get("pieceType").x:
 				0:
-					pieces.animation = "Black"
+					pieces.get_child(0).animation = "Black"
 				1:
-					pieces.animation = "White"
-			pieces.frame = selectedPiece.get("pieceType").y
+					pieces.get_child(0).animation = "White"
+			pieces.get_child(0).frame = selectedPiece.get("pieceType").y
 	
 	if event.is_action_released("MB1"):
 		pieces.hide()
 		if !isSelectedNull:
 			highlights.clear()
-			if !chess_pieces.moveTo(selectedPiece, get_global_mouse_position(), board.get_valid_moves()):
+			if !await chess_pieces.moveTo(selectedPiece, get_global_mouse_position(), board.get_valid_moves()):
 				chess_pieces.setPiece(selectedPiece)
 			else:
 				chess_sounds.play()
 
 
 func _ready() -> void:
+	print(board.PAWN)
 	chess_pieces.board = board
 	board.generate_board(chess_pieces.boardToFen() + " w KQkq - 0 1")
 	#menu.connect("updateSettings", Callable(self, "setSettings"))
