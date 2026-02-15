@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://db1nf3fwms8o6"
-path="res://.godot/imported/Quirky-Chess.png-e9aa7c5cfb00ace117f0a693c70cbee4.ctex"
+uid="uid://dmvyrdda7h0x0"
+path="res://.godot/imported/Pieces.svg-b9fbc8df9c5caff3ea738a33114894dd.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Quirky-Chess.png"
-dest_files=["res://.godot/imported/Quirky-Chess.png-e9aa7c5cfb00ace117f0a693c70cbee4.ctex"]
+source_file="res://assets/board/Pieces.svg"
+dest_files=["res://.godot/imported/Pieces.svg-b9fbc8df9c5caff3ea738a33114894dd.ctex"]
 
 [params]
 
@@ -38,3 +38,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=1.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false

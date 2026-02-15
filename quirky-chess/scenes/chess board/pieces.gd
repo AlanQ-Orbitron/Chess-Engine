@@ -1,4 +1,4 @@
-extends AnimatedSprite2D
+extends Control
 
 func _process(_delta: float) -> void:
-	global_position = get_global_mouse_position()
+	global_position = get_global_mouse_position() - (size / 2)

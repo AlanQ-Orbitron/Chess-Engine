@@ -1,6 +1,12 @@
-[gd_scene load_steps=15 format=3 uid="uid://bv56ueu58kve5"]
+[gd_scene load_steps=17 format=3 uid="uid://bv56ueu58kve5"]
 
-[ext_resource type="Texture2D" uid="uid://dmvyrdda7h0x0" path="res://assets/Pieces.svg" id="1_1h1fe"]
+[ext_resource type="Texture2D" uid="uid://dmvyrdda7h0x0" path="res://assets/board/Pieces.svg" id="1_1h1fe"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bebse"]
+bg_color = Color(0, 0, 0, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c5ofn"]
+bg_color = Color(0.28118682, 0.2811869, 0.28118676, 0.6509804)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7u44s"]
 atlas = ExtResource("1_1h1fe")
@@ -50,7 +56,7 @@ region = Rect2(54, 216, 54, 54)
 atlas = ExtResource("1_1h1fe")
 region = Rect2(54, 270, 54, 54)
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_0dat4"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_bebse"]
 animations = [{
 "frames": [{
 "duration": 1.0,
@@ -99,6 +105,32 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="Pieces" type="AnimatedSprite2D"]
-sprite_frames = SubResource("SpriteFrames_0dat4")
+[node name="Holder" type="Button"]
+custom_minimum_size = Vector2(54, 54)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -27.0
+offset_top = -27.0
+offset_right = 27.0
+offset_bottom = 27.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_bebse")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxFlat_bebse")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_c5ofn")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxFlat_c5ofn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_bebse")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxFlat_bebse")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_bebse")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxFlat_bebse")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_bebse")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxFlat_bebse")
+theme_override_styles/focus = SubResource("StyleBoxFlat_bebse")
+
+[node name="Pieces" type="AnimatedSprite2D" parent="."]
+position = Vector2(27, 27)
+sprite_frames = SubResource("SpriteFrames_bebse")
 animation = &"Black"

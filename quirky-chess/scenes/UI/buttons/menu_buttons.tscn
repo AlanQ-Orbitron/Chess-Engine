@@ -1,0 +1,91 @@
+[gd_scene load_steps=9 format=3 uid="uid://d0vgs15bd210w"]
+
+[ext_resource type="Script" uid="uid://dwhaflaj0e1c" path="res://scenes/UI/buttons/menu_buttons.gd" id="1_ep0th"]
+[ext_resource type="Texture2D" uid="uid://fkm8hsyk2oqt" path="res://assets/gui/Pawn.tres" id="2_l2ji3"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3ebqj"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ep0th"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qepro"]
+bg_color = Color(0.47058824, 0.52156866, 0.6627451, 0.61960787)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_crm1e"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_odtqa"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o0otn"]
+bg_color = Color(0.2520276, 0.25202766, 0.25202754, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+expand_margin_left = 8.0
+expand_margin_top = 8.0
+expand_margin_right = 8.0
+expand_margin_bottom = 8.0
+
+[node name="Button" type="Button"]
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -4.0
+offset_bottom = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_3ebqj")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ep0th")
+theme_override_styles/hover = SubResource("StyleBoxFlat_qepro")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_crm1e")
+theme_override_styles/focus = SubResource("StyleBoxFlat_odtqa")
+text = "Text
+"
+autowrap_mode = 3
+script = ExtResource("1_ep0th")
+
+[node name="Menu" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 108.0
+offset_top = -11.5
+offset_right = 108.0
+offset_bottom = -11.5
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Menu"]
+z_index = 1
+layout_mode = 1
+anchors_preset = -1
+
+[node name="Panel" type="Panel" parent="Menu/MarginContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_o0otn")
+
+[node name="GridContainer" type="GridContainer" parent="Menu/MarginContainer"]
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_l2ji3")
+expand_mode = 1
+stretch_mode = 4
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="Menu/MarginContainer" to="." method="_on_margin_container_mouse_entered"]
+[connection signal="mouse_exited" from="Menu/MarginContainer" to="." method="_on_margin_container_mouse_exited"]

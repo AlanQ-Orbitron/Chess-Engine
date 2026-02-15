@@ -1,5 +1,9 @@
 extends TileMapLayer
 
+@onready var promotion_menu: Control = %"Promotion Menu"
+@onready var chess_engine: Node2D = $".."
+
+
 const AtlasToFen: Dictionary = {
 	Vector2i(0, 0) : "p", Vector2i(1, 0) : "P",
 	Vector2i(0, 1) : "r", Vector2i(1, 1) : "R",
@@ -61,19 +65,26 @@ func moveTo(piece: Dictionary, pos: Vector2, legalMoves: Dictionary) -> bool:
 	var coords: Vector2i = invertY(localized(pos))
 	var move: String = UCISink(piece.get("position")) + UCISink(coords)
 	var pieces_type: String
+	var promotion_string: String
 	if move in legalMoves:
 		pieces_type = AtlasToFen.get(piece.get("pieceType"))
-		var sanityCheck: bool = board.move_to(pieces_type + move)
+		if legalMoves.has(move):
+			if legalMoves.get(move) is Array:
+				promotion_menu.global_position = to_global(map_to_local(filerankSink(move.substr(2, 2)))) - Vector2(0, 36)
+				var promotion_type: Vector2i = await promotion_menu.get_choice(legalMoves.get(move))
+				promotion_string = AtlasToFen.get(promotion_type)
+				piece.set("pieceType", promotion_type)
+			elif legalMoves.get(move) == "E":
+				clearCell(Vector2i(coords.x, coords.y + (1 if (pieces_type != pieces_type.to_upper()) else -1)))
+		var sanityCheck: bool = board.move_to(move + promotion_string)
 		if !sanityCheck:
 			printerr("Move To Error")
-		if legalMoves.has(move):
-			if legalMoves.get(move) == "E":
-				clearCell(Vector2i(coords.x, coords.y + (1 if (pieces_type != pieces_type.to_upper()) else -1)))
 		clearCell(piece.get("position"))
 		piece.set("position", coords)
 		setPiece(piece)
 		return true
 	return false
+
 
 func clearCell(coords: Vector2i) -> void:
 	set_cell(invertY(coords), -1)

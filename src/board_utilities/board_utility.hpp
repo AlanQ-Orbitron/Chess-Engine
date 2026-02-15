@@ -39,6 +39,17 @@ static const std::unordered_map<std::string, PieceType> to_pieces = {
     {"K", {Color::White, Pieces::King}},   {"k", {Color::Black, Pieces::King}}
 };
 
+static const std::unordered_map<PieceType, char> to_char = {
+    {{Color::White, Pieces::Pawn},   'P'}, {{Color::Black, Pieces::Pawn},   'p'},
+    {{Color::White, Pieces::Rook},   'R'}, {{Color::Black, Pieces::Rook},   'r'},
+    {{Color::White, Pieces::Knight}, 'N'}, {{Color::Black, Pieces::Knight}, 'n'},
+    {{Color::White, Pieces::Bishop}, 'B'}, {{Color::Black, Pieces::Bishop}, 'b'},
+    {{Color::White, Pieces::Queen},  'Q'}, {{Color::Black, Pieces::Queen},  'q'},
+    {{Color::White, Pieces::King},   'K'}, {{Color::Black, Pieces::King},  'k'}
+};
+
+
+
 // Helper Methods
 
 static constexpr RankFile index_to_rankfile(int square_index) {return {square_index % 8, square_index / 8};}; // Rank, File
@@ -121,18 +132,6 @@ inline void fen_to_bit(godot::String string_board, GameState &board) {
 
     process_position(position.utf8().get_data());
     board.states.white_to_move = true;
-
-
-    // board.bitboards.color[int(Color::White)] = convert_to_binary(process_position(position, U'B', U'R'));
-    // board.bitboards.color[int(Color::Black)] = convert_to_binary(process_position(position, U'b', U'r'));
-    // position = position.to_lower();
-
-    // board.bitboards.pieces[int(Pieces::Pawn)]   = convert_to_binary(process_position(position, U'p', U'p'));
-    // board.bitboards.pieces[int(Pieces::Rook)]   = convert_to_binary(process_position(position, U'r', U'r'));
-    // board.bitboards.pieces[int(Pieces::Knight)] = convert_to_binary(process_position(position, U'n', U'n'));
-    // board.bitboards.pieces[int(Pieces::Bishop)] = convert_to_binary(process_position(position, U'b', U'b'));
-    // board.bitboards.pieces[int(Pieces::Queen)]  = convert_to_binary(process_position(position, U'q', U'q'));
-    // board.bitboards.pieces[int(Pieces::King)]   = convert_to_binary(process_position(position, U'k', U'k'));
 }
 
 // Transformation

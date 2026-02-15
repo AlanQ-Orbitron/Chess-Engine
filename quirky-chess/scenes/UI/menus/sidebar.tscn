@@ -1,0 +1,133 @@
+[gd_scene load_steps=9 format=3 uid="uid://dubn1ywa4g8av"]
+
+[ext_resource type="Script" uid="uid://2o2hk87ckuar" path="res://scenes/UI/menus/sidebar.gd" id="1_1nfj0"]
+[ext_resource type="PackedScene" uid="uid://d0vgs15bd210w" path="res://scenes/UI/buttons/menu_buttons.tscn" id="2_0wdhu"]
+[ext_resource type="PackedScene" uid="uid://6pd1xa7wnl5d" path="res://scenes/UI/buttons/volume_slider.tscn" id="3_27htu"]
+[ext_resource type="PackedScene" uid="uid://dm8mjo8av4ryt" path="res://scenes/UI/side_menu_button.tscn" id="3_662k8"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mhym6"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yke1n"]
+bg_color = Color(0.2627451, 0.3019608, 0.41568628, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b0q6j"]
+bg_color = Color(0.2627451, 0.3019608, 0.41568628, 1)
+border_color = Color(0.2627451, 0.3019608, 0.41568628, 1)
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a3se8"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[node name="sidebar" type="PanelContainer"]
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 134.0
+grow_vertical = 2
+size_flags_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_mhym6")
+script = ExtResource("1_1nfj0")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = -1
+
+[node name="Menu" type="Panel" parent="MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_yke1n")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Menu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/Menu/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_bottom = 90
+
+[node name="Setting" parent="MarginContainer/HBoxContainer/Menu/VBoxContainer" instance=ExtResource("2_0wdhu")]
+layout_mode = 2
+text = "Settings"
+
+[node name="Menu" parent="MarginContainer/HBoxContainer/Menu/VBoxContainer/Setting" index="0"]
+visible = true
+
+[node name="GridContainer" parent="MarginContainer/HBoxContainer/Menu/VBoxContainer/Setting/Menu/MarginContainer" index="1"]
+columns = 6
+
+[node name="Master" parent="MarginContainer/HBoxContainer/Menu/VBoxContainer/Setting/Menu/MarginContainer/GridContainer" index="0" instance=ExtResource("3_27htu")]
+layout_mode = 2
+mixerBus = "Master"
+
+[node name="Music" parent="MarginContainer/HBoxContainer/Menu/VBoxContainer/Setting/Menu/MarginContainer/GridContainer" index="1" instance=ExtResource("3_27htu")]
+layout_mode = 2
+mixerBus = "Music"
+
+[node name="SFX" parent="MarginContainer/HBoxContainer/Menu/VBoxContainer/Setting/Menu/MarginContainer/GridContainer" index="2" instance=ExtResource("3_27htu")]
+layout_mode = 2
+mixerBus = "SFX"
+
+[node name="Play" parent="MarginContainer/HBoxContainer/Menu/VBoxContainer" instance=ExtResource("2_0wdhu")]
+layout_mode = 2
+text = "Play"
+
+[node name="Multiplayer" parent="MarginContainer/HBoxContainer/Menu/VBoxContainer/Play/Menu/MarginContainer/GridContainer" index="0" instance=ExtResource("3_662k8")]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Multiplayer"
+
+[node name="Story Mode" parent="MarginContainer/HBoxContainer/Menu/VBoxContainer/Play/Menu/MarginContainer/GridContainer" index="1" instance=ExtResource("3_662k8")]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Story Mode"
+
+[node name="Computer" parent="MarginContainer/HBoxContainer/Menu/VBoxContainer/Play/Menu/MarginContainer/GridContainer" index="2" instance=ExtResource("3_662k8")]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Computer"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_bottom = 15
+
+[node name="Panel" type="Panel" parent="MarginContainer/HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(35, 60)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_b0q6j")
+
+[node name="Button" type="Button" parent="MarginContainer/HBoxContainer/VBoxContainer/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_a3se8")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxFlat_a3se8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_a3se8")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxFlat_a3se8")
+theme_override_styles/hover = SubResource("StyleBoxFlat_a3se8")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxFlat_a3se8")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_a3se8")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxFlat_a3se8")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_a3se8")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxFlat_a3se8")
+theme_override_styles/focus = SubResource("StyleBoxFlat_a3se8")
+toggle_mode = true
+
+[connection signal="toggled" from="MarginContainer/HBoxContainer/VBoxContainer/Panel/Button" to="." method="_on_button_toggled"]
+
+[editable path="MarginContainer/HBoxContainer/Menu/VBoxContainer/Setting"]
+[editable path="MarginContainer/HBoxContainer/Menu/VBoxContainer/Play"]

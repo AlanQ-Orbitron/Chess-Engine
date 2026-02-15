@@ -1,19 +1,43 @@
 #pragma once
+#include <cstddef>
 #include <cstring>
 #include <memory>
 #include <cstdint>
 #include <optional>
 #include <vector>
 
-enum class Color : uint8_t {Black, White, Blocker, None, Total};
-enum class Pieces : uint8_t{Pawn, Rook, Knight, Bishop, Queen, King, PassPawn, Duck, None, Total};
-enum class MoveType : uint8_t {Attack, Movement, Castle, PassPawn, EnPassant, None, Total};
+enum class    Color   : uint8_t {Black, White, Blocker, None, Total};
+enum class   Pieces   : uint8_t {Pawn, Rook, Knight, Bishop, Queen, King, PassPawn, Duck, None, Total};
+enum class  MoveType  : uint8_t {Attack, Movement, Castle, PassPawn, EnPassant, Promotion, None, Total};
 enum class Directions : uint8_t {Top, Bottom, Left, Right, BottomLeft, BottomRight, TopLeft, TopRight};
 
 struct Rule;
 struct Piece;
 
-struct PieceType  {Color color; Pieces piece;};
+struct PieceType  {
+    Color color; Pieces piece;
+
+    bool operator== (const PieceType &external) const {
+        return color == external.color && piece == external.piece;
+    }
+
+    using ucolor = std::underlying_type_t<Color>;
+    using upiece = std::underlying_type_t<Pieces>;
+};
+
+
+namespace std {
+    template <>
+    struct hash<PieceType> {
+        size_t operator()(const PieceType &key) const noexcept {
+            return hash<uint64_t>()(
+                static_cast<PieceType::upiece>(key.piece) ^ 
+                static_cast<PieceType::ucolor>(key.color)
+            );
+        }
+    };
+}
+
 struct ShapeGroup {uint64_t bitboard[int(MoveType::Total)]{};};
 struct RankFile   {int rank, file;};
 struct Size       {int width, height;};

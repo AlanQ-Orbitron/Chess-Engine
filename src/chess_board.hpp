@@ -1,16 +1,20 @@
 #pragma once
 
 // IWYU pragma: begin_exports
+#include "board_utilities/chess_data.hpp"
 #include "rules/includer.hpp"
 #include "board_utilities/includer.hpp"
 #include "pieces/includer.hpp"
 // IWYU pragma: end_exports
 
 #include "godot_cpp/classes/node.hpp"
+#include <godot_cpp/variant/variant.hpp>
 #include "godot_cpp/variant/array.hpp"
 #include "godot_cpp/variant/dictionary.hpp"
 #include "godot_cpp/variant/string.hpp"
 #include "godot_cpp/variant/vector2.hpp"
+
+
 
 using namespace std;
 
@@ -27,8 +31,6 @@ class ChessBoard: public godot::Node{
         void generate_moves();
         void castling_checker(const Move &move_state);
     private:
-
-        
         void set_board(godot::Dictionary board) {
             Board.bitboards.color[int(Color::White)] = board["white_pieces"];
             Board.bitboards.color[int(Color::Black)] = board["black_pieces"];
@@ -53,3 +55,4 @@ class ChessBoard: public godot::Node{
         };
         void promotion_logic(int square_index);
 };
+
