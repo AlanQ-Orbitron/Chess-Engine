@@ -8,7 +8,7 @@
 
 enum class    Color   : uint8_t {Black, White, Blocker, None, Total};
 enum class   Pieces   : uint8_t {Pawn, Rook, Knight, Bishop, Queen, King, PassPawn, Duck, None, Total};
-enum class  MoveType  : uint8_t {Attack, Movement, Castle, PassPawn, EnPassant, Promotion, None, Total};
+enum class  MoveType  : uint8_t {Attack, Movement, Castle, PassPawn, EnPassant, PromotionMovement, PromotionAttack, None, Total};
 enum class Directions : uint8_t {Top, Bottom, Left, Right, BottomLeft, BottomRight, TopLeft, TopRight};
 
 struct Rule;

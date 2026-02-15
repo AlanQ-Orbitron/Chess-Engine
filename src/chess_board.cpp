@@ -3,7 +3,6 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 #include "board_utilities/board_utility.hpp"
 #include "board_utilities/chess_data.hpp"
-#include "godot_cpp/classes/global_constants.hpp"
 #include "godot_cpp/variant/array.hpp"
 #include "godot_cpp/variant/dictionary.hpp"
 #include "godot_cpp/variant/string.hpp"
@@ -37,7 +36,8 @@ godot::Dictionary ChessBoard::get_valid_moves() {
                         case MoveType::EnPassant:
                             addon = "E";
                             break;
-                        case MoveType::Promotion:{
+                        case MoveType::PromotionMovement:
+                        case MoveType::PromotionAttack:{
                             if (move->promotion.empty()) break;
                             godot::Array list_promotion;
                             for (Pieces promotions : move->promotion) {
@@ -123,7 +123,7 @@ bool ChessBoard::move_to(godot::String str_move) {
         std::vector<Pieces> promotions = move_state.value().promotion;
 
         Board.bitboards.pass_pawns[int(from_type.color)] = {};
-        // if (move_state.value().type == MoveType::Promotion) from_type = 
+        Board.bitboards.pass_pawns[int(to_type.color)] = (Board.states.white_to_move) ? to_square << 8 : to_square >> 8;
         if (move_state.value().type == MoveType::PassPawn) Board.bitboards.pass_pawns[int(from_type.color)] = (Board.states.white_to_move) ? to_square >> 8 : to_square << 8;
         if (move_state.value().type == MoveType::EnPassant) {
             Board.bitboards.color[int(to_type.color)] &= ~((Board.states.white_to_move) ? to_square >> 8 : to_square << 8);
@@ -149,16 +149,6 @@ bool ChessBoard::move_to(godot::String str_move) {
 }
 
 void ChessBoard::_bind_methods() {
-    godot::ClassDB::add_property(
-        get_class_static(),
-        godot::PropertyInfo(
-            godot::Variant::INT,
-            "enum_holder",
-            godot::PROPERTY_HINT_ENUM,
-            "RED,GREEN,BLUE"
-        ),"set_my_color","get_my_color"
-    );
-
 
     godot::ClassDB::bind_method(godot::D_METHOD("generate_board", "board"), &ChessBoard::generate_board);
     godot::ClassDB::bind_method(godot::D_METHOD("generate_moves"), &ChessBoard::generate_moves);

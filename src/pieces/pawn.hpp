@@ -39,7 +39,8 @@ struct Pawn : virtual Piece {
         write_moves(MoveType::Attack);
         write_moves(MoveType::PassPawn);
         write_moves(MoveType::EnPassant);
-        write_moves(MoveType::Promotion);
+        write_moves(MoveType::PromotionMovement);
+        write_moves(MoveType::PromotionAttack);
     }
 
 };
